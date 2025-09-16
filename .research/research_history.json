@@ -4,5 +4,79 @@
     "LLM fine-tuning loss function",
     "novel loss function LLM",
     "adaptive loss LLM tuning"
+  ],
+  "research_study_list": [
+    {
+      "title": "Preference Fine-Tuning of LLMs Should Leverage Suboptimal, On-Policy Data"
+    },
+    {
+      "title": "Discovering Preference Optimization Algorithms with and for Large Language Models"
+    },
+    {
+      "title": "Selecting Large Language Model to Fine-tune via Rectified Scaling Law"
+    },
+    {
+      "title": "Beyond Imitation: Leveraging Fine-grained Quality Signals for Alignment"
+    },
+    {
+      "title": "Risk-Averse Fine-tuning of Large Language Models"
+    },
+    {
+      "title": "Revisiting Zeroth-Order Optimization for Memory-Efficient LLM Fine-Tuning: A Benchmark"
+    },
+    {
+      "title": "Geometric-Averaged Preference Optimization for Soft Preference Labels"
+    },
+    {
+      "title": "Beyond MLE: Convex Learning for Text Generation"
+    },
+    {
+      "title": "Discovering Preference Optimization Algorithms with and for Large Language Models"
+    },
+    {
+      "title": "Language Generation with Strictly Proper Scoring Rules"
+    },
+    {
+      "title": "Beyond MLE: Convex Learning for Text Generation"
+    },
+    {
+      "title": "Model Alignment as Prospect Theoretic Optimization"
+    },
+    {
+      "title": "Risk-Averse Fine-tuning of Large Language Models"
+    },
+    {
+      "title": "Leftover Lunch: Advantage-based Offline Reinforcement Learning for Language Models"
+    },
+    {
+      "title": "Straight to the Gradient: Learning to Use Novel Tokens for Neural Text Generation"
+    },
+    {
+      "title": "Straight to the Gradient: Learning to Use Novel Tokens for Neural Text Generation"
+    },
+    {
+      "title": "Tuning LayerNorm in Attention: Towards Efficient Multi-Modal LLM Finetuning"
+    },
+    {
+      "title": "Geometric-Averaged Preference Optimization for Soft Preference Labels"
+    },
+    {
+      "title": "Discovering Preference Optimization Algorithms with and for Large Language Models"
+    },
+    {
+      "title": "Adaptive Budget Allocation for Parameter-Efficient Fine-Tuning "
+    },
+    {
+      "title": "PV-Tuning: Beyond Straight-Through Estimation for Extreme LLM Compression"
+    },
+    {
+      "title": "PV-Tuning: Beyond Straight-Through Estimation for Extreme LLM Compression"
+    },
+    {
+      "title": "Leftover Lunch: Advantage-based Offline Reinforcement Learning for Language Models"
+    },
+    {
+      "title": "Train-Attention: Meta-Learning Where to Focus in Continual Knowledge Learning"
+    }
   ]
 }
