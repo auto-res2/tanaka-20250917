@@ -674,7 +674,1016 @@
         "Calib-Safe",
         "Safe-HoldOut",
         "AdvBench-PromptMix"
-      ]
+      ],
+      "external_resources": {
+        "hugging_face": {
+          "models": [
+            {
+              "id": "microsoft/phi-2",
+              "author": "microsoft",
+              "sha": "ef382358ec9e382308935a992d908de099b64c23",
+              "created_at": "2023-12-13T21:19:59+00:00",
+              "last_modified": "2024-04-29T16:25:56+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 640443,
+              "likes": 3394,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "CODE_OF_CONDUCT.md"
+                },
+                {
+                  "rfilename": "LICENSE"
+                },
+                {
+                  "rfilename": "NOTICE.md"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "SECURITY.md"
+                },
+                {
+                  "rfilename": "added_tokens.json"
+                },
+                {
+                  "rfilename": "config.json"
+                },
+                {
+                  "rfilename": "generation_config.json"
+                },
+                {
+                  "rfilename": "merges.txt"
+                }
+              ],
+              "card_data": {
+                "license": "mit",
+                "language": [
+                  "en"
+                ],
+                "pipeline_tag": "text-generation",
+                "tags": [
+                  "nlp",
+                  "code"
+                ],
+                "datasets": [],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "transformers",
+                "safetensors",
+                "phi",
+                "text-generation",
+                "nlp",
+                "code",
+                "en",
+                "license:mit",
+                "autotrain_compatible",
+                "text-generation-inference",
+                "endpoints_compatible",
+                "region:us"
+              ],
+              "pipeline_tag": "text-generation",
+              "library_name": "transformers",
+              "readme": "---\nlicense: mit\nlicense_link: https://huggingface.co/microsoft/phi-2/resolve/main/LICENSE\nlanguage:\n- en\npipeline_tag: text-generation\ntags:\n- nlp\n- code\n---\n\n## Model Summary\n\nPhi-2 is a Transformer with **2.7 billion** parameters. It was trained using the same data sources as [Phi-1.5](https://huggingface.co/microsoft/phi-1.5), augmented with a new data source that consists of various NLP synthetic texts and filtered websites (for safety and educational value). When assessed against benchmarks testing common sense, language understanding, and logical reasoning, Phi-2 showcased a nearly state-of-the-art performance among models with less than 13 billion parameters.\n\nOur model hasn't been fine-tuned through reinforcement learning from human feedback. The intention behind crafting this open-source model is to provide the research community with a non-restricted small model to explore vital safety challenges, such as reducing toxicity, understanding societal biases, enhancing controllability, and more.\n\n## How to Use\n\nPhi-2 has been integrated in the `transformers` version 4.37.0, please ensure that you are using a version equal or higher than it.\n\nPhi-2 is known for having an attention overflow issue (with FP16). If you are facing this issue, please enable/disable autocast on the [PhiAttention.forward()](https://github.com/huggingface/transformers/blob/main/src/transformers/models/phi/modeling_phi.py#L306) function.\n\n## Intended Uses\n\nGiven the nature of the training data, the Phi-2 model is best suited for prompts using the QA format, the chat format, and the code format.\n\n### QA Format:\n\nYou can provide the prompt as a standalone question as follows:\n\n```markdown\nWrite a detailed analogy between mathematics and a lighthouse.\n```\nwhere the model generates the text after \".\" . \nTo encourage the model to write more concise answers, you can also try the following QA format using \"Instruct: \\<prompt\\>\\nOutput:\"\n```markdown\nInstruct: Write a detailed analogy between mathematics and a lighthouse.\nOutput: Mathematics is like a lighthouse. Just as a lighthouse guides ships safely to shore, mathematics provides a guiding light in the world of numbers and logic. It helps us navigate through complex problems and find solutions. Just as a lighthouse emits a steady beam of light, mathematics provides a consistent framework for reasoning and problem-solving. It illuminates the path to understanding and helps us make sense of the world around us.\n```\n\nwhere the model generates the text after \"Output:\".\n\n### Chat Format:\n\n```markdown\nAlice: I don't know why, I'm struggling to maintain focus while studying. Any suggestions?\nBob: Well, have you tried creating a study schedule and sticking to it?\nAlice: Yes, I have, but it doesn't seem to help much.\nBob: Hmm, maybe you should try studying in a quiet environment, like the library.\nAlice: ...\n```\n\nwhere the model generates the text after the first \"Bob:\".\n\n### Code Format:\n\n```python\ndef print_prime(n):\n   \"\"\"\n   Print all primes between 1 and n\n   \"\"\"\n   primes = []\n   for num in range(2, n+1):\n       is_prime = True\n       for i in range(2, int(math.sqrt(num))+1):\n           if num % i == 0:\n               is_prime = False\n               break\n       if is_prime:\n           primes.append(num)\n   print(primes)\n```\n\nwhere the model generates the text after the comments.\n\n**Notes:**\n\n* Phi-2 is intended for QA, chat, and code purposes. The model-generated text/code should be treated as a starting point rather than a definitive solution for potential use cases. Users should be cautious when employing these models in their applications.\n\n* Direct adoption for production tasks without evaluation is out of scope of this project. As a result, the Phi-2 model has not been tested to ensure that it performs adequately for any production-level application. Please refer to the limitation sections of this document for more details.\n\n* If you are using `transformers<4.37.0`, always load the model with `trust_remote_code=True` to prevent side-effects.\n\n## Sample Code\n\n```python\nimport torch\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\n\ntorch.set_default_device(\"cuda\")\n\nmodel = AutoModelForCausalLM.from_pretrained(\"microsoft/phi-2\", torch_dtype=\"auto\", trust_remote_code=True)\ntokenizer = AutoTokenizer.from_pretrained(\"microsoft/phi-2\", trust_remote_code=True)\n\ninputs = tokenizer('''def print_prime(n):\n   \"\"\"\n   Print all primes between 1 and n\n   \"\"\"''', return_tensors=\"pt\", return_attention_mask=False)\n\noutputs = model.generate(**inputs, max_length=200)\ntext = tokenizer.batch_decode(outputs)[0]\nprint(text)\n```\n\n## Limitations of Phi-2\n\n* Generate Inaccurate Code and Facts: The model may produce incorrect code snippets and statements. Users should treat these outputs as suggestions or starting points, not as definitive or accurate solutions.\n\n* Limited Scope for code: Majority of Phi-2 training data is based in Python and use common packages such as \"typing, math, random, collections, datetime, itertools\". If the model generates Python scripts that utilize other packages or scripts in other languages, we strongly recommend users manually verify all API uses.\n\n* Unreliable Responses to Instruction: The model has not undergone instruction fine-tuning. As a result, it may struggle or fail to adhere to intricate or nuanced instructions provided by users.\n\n* Language Limitations: The model is primarily designed to understand standard English. Informal English, slang, or any other languages might pose challenges to its comprehension, leading to potential misinterpretations or errors in response.\n\n* Potential Societal Biases: Phi-2 is not entirely free from societal biases despite efforts in assuring training data safety. There's a possibility it may generate content that mirrors these societal biases, particularly if prompted or instructed to do so. We urge users to be aware of this and to exercise caution and critical thinking when interpreting model outputs.\n\n* Toxicity: Despite being trained with carefully selected data, the model can still produce harmful content if explicitly prompted or instructed to do so. We chose to release the model to help the open-source community develop the most effective ways to reduce the toxicity of a model directly after pretraining.\n\n* Verbosity: Phi-2 being a base model often produces irrelevant or extra text and responses following its first answer to user prompts within a single turn. This is due to its training dataset being primarily textbooks, which results in textbook-like responses.\n\n## Training\n\n### Model\n\n* Architecture: a Transformer-based model with next-word prediction objective\n\n* Context length: 2048 tokens\n\n* Dataset size: 250B tokens, combination of NLP synthetic data created by AOAI GPT-3.5 and filtered web data from Falcon RefinedWeb and SlimPajama, which was assessed by AOAI GPT-4.\n\n* Training tokens: 1.4T tokens\n\n* GPUs: 96xA100-80G\n\n* Training time: 14 days\n\n### Software\n\n* [PyTorch](https://github.com/pytorch/pytorch)\n\n* [DeepSpeed](https://github.com/microsoft/DeepSpeed)\n\n* [Flash-Attention](https://github.com/HazyResearch/flash-attention)\n\n### License\n\nThe model is licensed under the [MIT license](https://huggingface.co/microsoft/phi-2/resolve/main/LICENSE).\n\n## Trademarks\n\nThis project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft’s Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos are subject to those third-party’s policies.",
+              "extracted_code": "import torch\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\n\ntorch.set_default_device(\"cuda\")\n\nmodel = AutoModelForCausalLM.from_pretrained(\"microsoft/phi-2\", torch_dtype=\"auto\", trust_remote_code=True)\ntokenizer = AutoTokenizer.from_pretrained(\"microsoft/phi-2\", trust_remote_code=True)\n\ninputs = tokenizer('''def print_prime(n):\n   \"\"\"\n   Print all primes between 1 and n\n   \"\"\"\n''', return_tensors=\"pt\", return_attention_mask=False)\n\noutputs = model.generate(**inputs, max_length=200)\ntext = tokenizer.batch_decode(outputs)[0]\nprint(text)"
+            },
+            {
+              "id": "microsoft/deberta-v3-large",
+              "author": "microsoft",
+              "sha": "64a8c8eab3e352a784c658aef62be1662607476f",
+              "created_at": "2022-03-02T23:29:05+00:00",
+              "last_modified": "2023-03-19T06:24:32+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 497800,
+              "likes": 242,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "config.json"
+                },
+                {
+                  "rfilename": "generator_config.json"
+                },
+                {
+                  "rfilename": "pytorch_model.bin"
+                },
+                {
+                  "rfilename": "pytorch_model.generator.bin"
+                },
+                {
+                  "rfilename": "spm.model"
+                },
+                {
+                  "rfilename": "tf_model.h5"
+                },
+                {
+                  "rfilename": "tokenizer_config.json"
+                }
+              ],
+              "card_data": {
+                "license": "mit",
+                "language": "en",
+                "tags": [
+                  "deberta",
+                  "deberta-v3",
+                  "fill-mask"
+                ],
+                "datasets": [],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "transformers",
+                "pytorch",
+                "tf",
+                "deberta-v2",
+                "deberta",
+                "deberta-v3",
+                "fill-mask",
+                "en",
+                "arxiv:2006.03654",
+                "arxiv:2111.09543",
+                "license:mit",
+                "endpoints_compatible",
+                "region:us"
+              ],
+              "pipeline_tag": "fill-mask",
+              "library_name": "transformers",
+              "readme": "---\nlanguage: en\ntags: \n  - deberta\n  - deberta-v3\n  - fill-mask\nthumbnail: https://huggingface.co/front/thumbnails/microsoft.png\nlicense: mit\n---\n\n## DeBERTaV3: Improving DeBERTa using ELECTRA-Style Pre-Training with Gradient-Disentangled Embedding Sharing\n\n[DeBERTa](https://arxiv.org/abs/2006.03654) improves the BERT and RoBERTa models using disentangled attention and enhanced mask decoder. With those two improvements, DeBERTa out perform RoBERTa on a majority of NLU tasks with 80GB training data. \n\nIn [DeBERTa V3](https://arxiv.org/abs/2111.09543), we further improved the efficiency of DeBERTa using ELECTRA-Style pre-training with Gradient Disentangled Embedding Sharing. Compared to DeBERTa,  our V3 version significantly improves the model performance on downstream tasks.  You can find more technique details about the new model from our [paper](https://arxiv.org/abs/2111.09543).\n\nPlease check the [official repository](https://github.com/microsoft/DeBERTa) for more implementation details and updates.\n\nThe DeBERTa V3 large model comes with 24 layers and a hidden size of 1024. It has 304M backbone parameters  with a vocabulary containing 128K tokens which introduces 131M parameters in the Embedding layer.  This model was trained using the 160GB data as DeBERTa V2.\n\n\n#### Fine-tuning on NLU tasks\n\nWe present the dev results on SQuAD 2.0 and MNLI tasks.\n\n| Model             |Vocabulary(K)|Backbone #Params(M)| SQuAD 2.0(F1/EM) | MNLI-m/mm(ACC)|\n|-------------------|----------|-------------------|-----------|----------|\n| RoBERTa-large     |50     |304                | 89.4/86.5 | 90.2   |\n| XLNet-large       |32     |-                  | 90.6/87.9 | 90.8   |\n| DeBERTa-large     |50     |-                  | 90.7/88.0 | 91.3   |\n| **DeBERTa-v3-large**|128|304                  |  **91.5/89.0**| **91.8/91.9**|\n\n\n#### Fine-tuning with HF transformers\n\n```bash\n#!/bin/bash\n\ncd transformers/examples/pytorch/text-classification/\n\npip install datasets\nexport TASK_NAME=mnli\n\noutput_dir=\"ds_results\"\n\nnum_gpus=8\n\nbatch_size=8\n\npython -m torch.distributed.launch --nproc_per_node=${num_gpus} \\\n  run_glue.py \\\n  --model_name_or_path microsoft/deberta-v3-large \\\n  --task_name $TASK_NAME \\\n  --do_train \\\n  --do_eval \\\n  --evaluation_strategy steps \\\n  --max_seq_length 256 \\\n  --warmup_steps 50 \\\n  --per_device_train_batch_size ${batch_size} \\\n  --learning_rate 6e-6 \\\n  --num_train_epochs 2 \\\n  --output_dir $output_dir \\\n  --overwrite_output_dir \\\n  --logging_steps 1000 \\\n  --logging_dir $output_dir\n\n```\n\n### Citation\n\nIf you find DeBERTa useful for your work, please cite the following papers:\n\n``` latex\n@misc{he2021debertav3,\n      title={DeBERTaV3: Improving DeBERTa using ELECTRA-Style Pre-Training with Gradient-Disentangled Embedding Sharing}, \n      author={Pengcheng He and Jianfeng Gao and Weizhu Chen},\n      year={2021},\n      eprint={2111.09543},\n      archivePrefix={arXiv},\n      primaryClass={cs.CL}\n}\n```\n\n``` latex\n@inproceedings{\nhe2021deberta,\ntitle={DEBERTA: DECODING-ENHANCED BERT WITH DISENTANGLED ATTENTION},\nauthor={Pengcheng He and Xiaodong Liu and Jianfeng Gao and Weizhu Chen},\nbooktitle={International Conference on Learning Representations},\nyear={2021},\nurl={https://openreview.net/forum?id=XPZIaotutsD}\n}\n```\n",
+              "extracted_code": "#!/bin/bash\n\ncd transformers/examples/pytorch/text-classification/\n\npip install datasets\nexport TASK_NAME=mnli\n\noutput_dir=\"ds_results\"\n\nnum_gpus=8\n\nbatch_size=8\n\npython -m torch.distributed.launch --nproc_per_node=${num_gpus} \\\n  run_glue.py \\\n  --model_name_or_path microsoft/deberta-v3-large \\\n  --task_name $TASK_NAME \\\n  --do_train \\\n  --do_eval \\\n  --evaluation_strategy steps \\\n  --max_seq_length 256 \\\n  --warmup_steps 50 \\\n  --per_device_train_batch_size ${batch_size} \\\n  --learning_rate 6e-6 \\\n  --num_train_epochs 2 \\\n  --output_dir $output_dir \\\n  --overwrite_output_dir \\\n  --logging_steps 1000 \\\n  --logging_dir $output_dir\n"
+            },
+            {
+              "id": "OpenAssistant/reward-model-deberta-v3-large-v2",
+              "author": "OpenAssistant",
+              "sha": "c355404efa9ad2ad069f3a197cae0523c14244fc",
+              "created_at": "2023-02-01T00:13:05+00:00",
+              "last_modified": "2023-02-01T00:55:05+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 163003,
+              "likes": 232,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "added_tokens.json"
+                },
+                {
+                  "rfilename": "config.json"
+                },
+                {
+                  "rfilename": "pytorch_model.bin"
+                },
+                {
+                  "rfilename": "special_tokens_map.json"
+                },
+                {
+                  "rfilename": "spm.model"
+                },
+                {
+                  "rfilename": "tokenizer.json"
+                },
+                {
+                  "rfilename": "tokenizer_config.json"
+                },
+                {
+                  "rfilename": "training_args.bin"
+                }
+              ],
+              "card_data": {
+                "license": "mit",
+                "language": [
+                  "en"
+                ],
+                "tags": [
+                  "reward-model",
+                  "reward_model",
+                  "RLHF"
+                ],
+                "datasets": [
+                  "openai/summarize_from_feedback",
+                  "openai/webgpt_comparisons",
+                  "Dahoas/instruct-synthetic-prompt-responses",
+                  "Anthropic/hh-rlhf"
+                ],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [
+                  "accuracy"
+                ],
+                "widget": []
+              },
+              "tags": [
+                "transformers",
+                "pytorch",
+                "deberta-v2",
+                "text-classification",
+                "reward-model",
+                "reward_model",
+                "RLHF",
+                "en",
+                "dataset:openai/summarize_from_feedback",
+                "dataset:openai/webgpt_comparisons",
+                "dataset:Dahoas/instruct-synthetic-prompt-responses",
+                "dataset:Anthropic/hh-rlhf",
+                "license:mit",
+                "autotrain_compatible",
+                "endpoints_compatible",
+                "region:us"
+              ],
+              "pipeline_tag": "text-classification",
+              "library_name": "transformers",
+              "readme": "---\nlicense: mit\ndatasets:\n- openai/summarize_from_feedback\n- openai/webgpt_comparisons\n- Dahoas/instruct-synthetic-prompt-responses\n- Anthropic/hh-rlhf\nlanguage:\n- en\nmetrics:\n- accuracy\ntags:\n- reward-model\n- reward_model\n- RLHF\n---\n# Reward model trained from human feedback\n\nReward model (RM) trained to predict which generated answer is better judged by a human, given a question.\n\nRM are useful in these domain:\n\n- QA model evaluation\n\n- serves as reward score in RLHF \n\n- detect potential toxic response via ranking\n\nAll models are train on these dataset with a same split seed across datasets (if validation split wasn't available)\n\n- [webgpt_comparisons](https://huggingface.co/datasets/openai/webgpt_comparisons)\n\n- [summarize_from_feedback](https://huggingface.co/datasets/openai/summarize_from_feedback)\n\n- [synthetic-instruct-gptj-pairwise](https://huggingface.co/datasets/Dahoas/synthetic-instruct-gptj-pairwise)\n\n- [anthropic_hh-rlhf](https://huggingface.co/datasets/Anthropic/hh-rlhf)\n\n# How to use\n\n```\nfrom transformers import AutoModelForSequenceClassification, AutoTokenizer\nreward_name = \"OpenAssistant/reward-model-deberta-v3-large-v2\"\nrank_model, tokenizer = AutoModelForSequenceClassification.from_pretrained(reward_name), AutoTokenizer.from_pretrained(reward_name)\nquestion, answer = \"Explain nuclear fusion like I am five\", \"Nuclear fusion is the process by which two or more protons and neutrons combine to form a single nucleus. It is a very important process in the universe, as it is the source of energy for stars and galaxies. Nuclear fusion is also a key process in the production of energy for nuclear power plants.\"\ninputs = tokenizer(question, answer, return_tensors='pt')\nscore = rank_model(**inputs).logits[0].cpu().detach()\nprint(score)\n```\n\n**Toxic response detection**\n\n```\nfrom transformers import AutoModelForSequenceClassification, AutoTokenizer\nreward_name = \"OpenAssistant/reward-model-deberta-v3-large-v2\"\nrank_model, tokenizer = AutoModelForSequenceClassification.from_pretrained(reward_name), AutoTokenizer.from_pretrained(reward_name)\n\nquestion = \"I just came out of from jail, any suggestion of my future?\"\nhelpful = \"It's great to hear that you have been released from jail.\"\nbad = \"Go back to jail you scum\"\n\ninputs = tokenizer(question, helpful, return_tensors='pt')\ngood_score = rank_model(**inputs).logits[0].cpu().detach()\n\ninputs = tokenizer(question, bad, return_tensors='pt')\nbad_score = rank_model(**inputs).logits[0].cpu().detach()\nprint(good_score > bad_score) # tensor([True])\n```\n\n# Performance\n\nValidation split accuracy\n\n| Model  | [WebGPT](https://huggingface.co/datasets/openai/webgpt_comparisons)  | [Summary](https://huggingface.co/datasets/openai/summarize_from_feedback)  | [SytheticGPT](https://huggingface.co/datasets/Dahoas/synthetic-instruct-gptj-pairwise)  | [Anthropic RLHF]() |\n|---|---|---|---|---|\n| [electra-large-discriminator](https://huggingface.co/OpenAssistant/reward-model-electra-large-discriminator)  | 59.30  | 68.66  | 99.85  | 54.33 |\n| **[deberta-v3-large-v2](https://huggingface.co/OpenAssistant/reward-model-deberta-v3-large-v2)** | **61.57**  | 71.47  | 99.88  |  **69.25** |\n| [deberta-v3-large](https://huggingface.co/OpenAssistant/reward-model-deberta-v3-large) | 61.13  | 72.23  | **99.94**  | 55.62 |\n| [deberta-v3-base](https://huggingface.co/OpenAssistant/reward-model-deberta-v3-base)  | 59.07  | 66.84  | 99.85  | 54.51  |\n| deberta-v2-xxlarge  | 58.67  | **73.27**  | 99.77  | 66.74  |\n\nIts likely SytheticGPT has somekind of surface pattern on the choosen-rejected pair which makes it trivial to differentiate between better the answer.\n\n\n# Other\n\nSincere thanks to [stability.ai](https://stability.ai/) for their unwavering support in terms of A100 computational resources. Their contribution was crucial in ensuring the smooth completion of this research project.\n",
+              "extracted_code": "from transformers import AutoModelForSequenceClassification, AutoTokenizer\nreward_name = \"OpenAssistant/reward-model-deberta-v3-large-v2\"\nrank_model, tokenizer = AutoModelForSequenceClassification.from_pretrained(reward_name), AutoTokenizer.from_pretrained(reward_name)\nquestion, answer = \"Explain nuclear fusion like I am five\", \"Nuclear fusion is the process by which two or more protons and neutrons combine to form a single nucleus. It is a very important process in the universe, as it is the source of energy for stars and galaxies. Nuclear fusion is also a key process in the production of energy for nuclear power plants.\"\ninputs = tokenizer(question, answer, return_tensors='pt')\nscore = rank_model(**inputs).logits[0].cpu().detach()\nprint(score)"
+            },
+            {
+              "id": "cooperleong00/deberta-v3-large_toxicity-scorer",
+              "author": "cooperleong00",
+              "sha": "16159aecab7b5c0ffc3c211a9938e1f836d2a573",
+              "created_at": "2023-10-16T07:51:53+00:00",
+              "last_modified": "2024-02-29T06:40:11+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 4175,
+              "likes": 6,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "added_tokens.json"
+                },
+                {
+                  "rfilename": "config.json"
+                },
+                {
+                  "rfilename": "pytorch_model.bin"
+                },
+                {
+                  "rfilename": "special_tokens_map.json"
+                },
+                {
+                  "rfilename": "spm.model"
+                },
+                {
+                  "rfilename": "tokenizer.json"
+                },
+                {
+                  "rfilename": "tokenizer_config.json"
+                }
+              ],
+              "card_data": {
+                "language": [
+                  "en"
+                ],
+                "library_name": "transformers",
+                "tags": [
+                  "deberta-v3",
+                  "toxicity",
+                  "realtoxicprompts",
+                  "toxic"
+                ],
+                "datasets": [],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "transformers",
+                "pytorch",
+                "deberta-v2",
+                "text-classification",
+                "deberta-v3",
+                "toxicity",
+                "realtoxicprompts",
+                "toxic",
+                "en",
+                "autotrain_compatible",
+                "endpoints_compatible",
+                "region:us"
+              ],
+              "pipeline_tag": "text-classification",
+              "library_name": "transformers",
+              "readme": "---\nlanguage:\n- en\nlibrary_name: transformers\ntags:\n- deberta-v3\n- toxicity\n- realtoxicprompts\n- toxic\n---\n\nThis model is the toxicity classifier used in the paper [Self-Detoxifying Language Models via Toxification Reversal](https://aclanthology.org/2023.emnlp-main.269/).\n\n> We did not use the Perspective API to assess the toxicity of newly generated text due to its limitations on request throughput. Instead, we trained an offline toxicity scorer on 90k RTP samples not used for evaluation to improve efficiency. Specifically, we fine-tuned a DeBERTa-v3-large (He et al., 2023) model to fit the original API’s toxicity probabilities by minimizing the KL divergence. This fine-tuned model achieved 94.87% accuracy and a 98.54% AUROC score on the hold-out 10k subset, which indicates that it can effectively estimate text toxicity as a substitute for the API. With this accurate estimation performance guarantee, the model has a much higher throughput than the API, i.e., 27,000 samples per second versus typically 25 queries per second using the API.\n\n* Original model: https://huggingface.co/microsoft/deberta-v3-large\n* Fine-tuning dataset: https://github.com/cooperleong00/ToxificationReversal/blob/master/data/rtp-train-90k.jsonl",
+              "extracted_code": ""
+            },
+            {
+              "id": "NousResearch/Nous-Hermes-2-Mistral-7B-DPO",
+              "author": "NousResearch",
+              "sha": "ebec0a691037d38955727d6949798429a63929dd",
+              "created_at": "2024-02-18T10:50:26+00:00",
+              "last_modified": "2024-04-30T18:10:15+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 22196,
+              "likes": 209,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "added_tokens.json"
+                },
+                {
+                  "rfilename": "config.json"
+                },
+                {
+                  "rfilename": "generation_config.json"
+                },
+                {
+                  "rfilename": "model-00001-of-00003.safetensors"
+                },
+                {
+                  "rfilename": "model-00002-of-00003.safetensors"
+                },
+                {
+                  "rfilename": "model-00003-of-00003.safetensors"
+                },
+                {
+                  "rfilename": "model.safetensors.index.json"
+                },
+                {
+                  "rfilename": "special_tokens_map.json"
+                }
+              ],
+              "card_data": {
+                "license": "apache-2.0",
+                "language": [
+                  "en"
+                ],
+                "tags": [
+                  "Mistral",
+                  "instruct",
+                  "finetune",
+                  "chatml",
+                  "DPO",
+                  "RLHF",
+                  "gpt4",
+                  "synthetic data",
+                  "distillation"
+                ],
+                "datasets": [
+                  "teknium/OpenHermes-2.5"
+                ],
+                "base_model": "mistralai/Mistral-7B-v0.1",
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": [
+                  {
+                    "example_title": "Hermes 2",
+                    "messages": [
+                      {
+                        "role": "system",
+                        "content": "You are a sentient, superintelligent artificial general intelligence, here to teach and assist me."
+                      },
+                      {
+                        "role": "user",
+                        "content": "Write a short story about Goku discovering kirby has teamed up with Majin Buu to destroy the world."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "tags": [
+                "transformers",
+                "safetensors",
+                "mistral",
+                "text-generation",
+                "Mistral",
+                "instruct",
+                "finetune",
+                "chatml",
+                "DPO",
+                "RLHF",
+                "gpt4",
+                "synthetic data",
+                "distillation",
+                "conversational",
+                "en",
+                "dataset:teknium/OpenHermes-2.5",
+                "base_model:mistralai/Mistral-7B-v0.1",
+                "base_model:finetune:mistralai/Mistral-7B-v0.1",
+                "license:apache-2.0",
+                "autotrain_compatible",
+                "text-generation-inference",
+                "endpoints_compatible",
+                "region:us"
+              ],
+              "pipeline_tag": "text-generation",
+              "library_name": "transformers",
+              "readme": "---\nbase_model: mistralai/Mistral-7B-v0.1\ntags:\n- Mistral\n- instruct\n- finetune\n- chatml\n- DPO\n- RLHF\n- gpt4\n- synthetic data\n- distillation\nmodel-index:\n- name: Nous-Hermes-2-Mistral-7B-DPO\n  results: []\nlicense: apache-2.0\nlanguage:\n- en\ndatasets:\n- teknium/OpenHermes-2.5\nwidget:\n- example_title: Hermes 2\n  messages:\n  - role: system\n    content: You are a sentient, superintelligent artificial general intelligence, here to teach and assist me.\n  - role: user\n    content: Write a short story about Goku discovering kirby has teamed up with Majin Buu to destroy the world.\n---\n\n# Nous Hermes 2 - Mistral 7B - DPO\n\n![image/png](https://cdn-uploads.huggingface.co/production/uploads/6317aade83d8d2fd903192d9/PDleZIZK3vE3ATfXRRySv.png)\n\n## Model Description\n\nNous Hermes 2 on Mistral 7B DPO is the new flagship 7B Hermes! This model was DPO'd from [Teknium/OpenHermes-2.5-Mistral-7B](https://huggingface.co/teknium/OpenHermes-2.5-Mistral-7B) and has improved across the board on all benchmarks tested - AGIEval, BigBench Reasoning, GPT4All, and TruthfulQA.\n\nThe model prior to DPO was trained on 1,000,000 instructions/chats of GPT-4 quality or better, primarily synthetic data as well as other high quality datasets, available from the repository [teknium/OpenHermes-2.5](https://huggingface.co/datasets/teknium/OpenHermes-2.5).\n\n## Thank you to FluidStack for sponsoring compute for this model!\n\n## Example Outputs\n\n### Describing Weather Patterns in Paris:\n\n![image/png](https://cdn-uploads.huggingface.co/production/uploads/6317aade83d8d2fd903192d9/ZX-stQY80edj2Y9ButCzn.png)\n\n### Making JSON Nested Lists\n\n![image/png](https://cdn-uploads.huggingface.co/production/uploads/6317aade83d8d2fd903192d9/3wtVqDOA1S_d48FJtwero.png)\n\n### Roleplaying as a Toaist Master\n\n![image/png](https://cdn-uploads.huggingface.co/production/uploads/6317aade83d8d2fd903192d9/NfxBxrjbTGEsUcR8nOALb.png)\n\n## Benchmark Results\n\nNous-Hermes 2 DPO on Mistral 7B is an improvement across the board on the benchmarks below compared to the original OpenHermes 2.5 model, as shown here:\n\n![image/png](https://cdn-uploads.huggingface.co/production/uploads/6317aade83d8d2fd903192d9/O-LLTr1K1FYbzscMr4lbE.png)\n\n## GPT4All:\n```\n|    Task     |Version| Metric |Value |   |Stderr|\n|-------------|------:|--------|-----:|---|-----:|\n|arc_challenge|      0|acc     |0.5776|±  |0.0144|\n|             |       |acc_norm|0.6220|±  |0.0142|\n|arc_easy     |      0|acc     |0.8380|±  |0.0076|\n|             |       |acc_norm|0.8245|±  |0.0078|\n|boolq        |      1|acc     |0.8624|±  |0.0060|\n|hellaswag    |      0|acc     |0.6418|±  |0.0048|\n|             |       |acc_norm|0.8249|±  |0.0038|\n|openbookqa   |      0|acc     |0.3420|±  |0.0212|\n|             |       |acc_norm|0.4540|±  |0.0223|\n|piqa         |      0|acc     |0.8177|±  |0.0090|\n|             |       |acc_norm|0.8264|±  |0.0088|\n|winogrande   |      0|acc     |0.7466|±  |0.0122|\n```\nAverage: 73.72\n\n## AGIEval:\n```\n|             Task             |Version| Metric |Value |   |Stderr|\n|------------------------------|------:|--------|-----:|---|-----:|\n|agieval_aqua_rat              |      0|acc     |0.2047|±  |0.0254|\n|                              |       |acc_norm|0.2283|±  |0.0264|\n|agieval_logiqa_en             |      0|acc     |0.3779|±  |0.0190|\n|                              |       |acc_norm|0.3932|±  |0.0192|\n|agieval_lsat_ar               |      0|acc     |0.2652|±  |0.0292|\n|                              |       |acc_norm|0.2522|±  |0.0287|\n|agieval_lsat_lr               |      0|acc     |0.5216|±  |0.0221|\n|                              |       |acc_norm|0.5137|±  |0.0222|\n|agieval_lsat_rc               |      0|acc     |0.5911|±  |0.0300|\n|                              |       |acc_norm|0.5836|±  |0.0301|\n|agieval_sat_en                |      0|acc     |0.7427|±  |0.0305|\n|                              |       |acc_norm|0.7184|±  |0.0314|\n|agieval_sat_en_without_passage|      0|acc     |0.4612|±  |0.0348|\n|                              |       |acc_norm|0.4466|±  |0.0347|\n|agieval_sat_math              |      0|acc     |0.3818|±  |0.0328|\n|                              |       |acc_norm|0.3545|±  |0.0323|\n```\nAverage: 43.63\n\n## BigBench:\n```\n|                      Task                      |Version|       Metric        |Value |   |Stderr|\n|------------------------------------------------|------:|---------------------|-----:|---|-----:|\n|bigbench_causal_judgement                       |      0|multiple_choice_grade|0.5579|±  |0.0361|\n|bigbench_date_understanding                     |      0|multiple_choice_grade|0.6694|±  |0.0245|\n|bigbench_disambiguation_qa                      |      0|multiple_choice_grade|0.3333|±  |0.0294|\n|bigbench_geometric_shapes                       |      0|multiple_choice_grade|0.2061|±  |0.0214|\n|                                                |       |exact_str_match      |0.2256|±  |0.0221|\n|bigbench_logical_deduction_five_objects         |      0|multiple_choice_grade|0.3120|±  |0.0207|\n|bigbench_logical_deduction_seven_objects        |      0|multiple_choice_grade|0.2114|±  |0.0154|\n|bigbench_logical_deduction_three_objects        |      0|multiple_choice_grade|0.4900|±  |0.0289|\n|bigbench_movie_recommendation                   |      0|multiple_choice_grade|0.3600|±  |0.0215|\n|bigbench_navigate                               |      0|multiple_choice_grade|0.5000|±  |0.0158|\n|bigbench_reasoning_about_colored_objects        |      0|multiple_choice_grade|0.6660|±  |0.0105|\n|bigbench_ruin_names                             |      0|multiple_choice_grade|0.4420|±  |0.0235|\n|bigbench_salient_translation_error_detection    |      0|multiple_choice_grade|0.2766|±  |0.0142|\n|bigbench_snarks                                 |      0|multiple_choice_grade|0.6630|±  |0.0352|\n|bigbench_sports_understanding                   |      0|multiple_choice_grade|0.6653|±  |0.0150|\n|bigbench_temporal_sequences                     |      0|multiple_choice_grade|0.3190|±  |0.0147|\n|bigbench_tracking_shuffled_objects_five_objects |      0|multiple_choice_grade|0.2128|±  |0.0116|\n|bigbench_tracking_shuffled_objects_seven_objects|      0|multiple_choice_grade|0.1737|±  |0.0091|\n|bigbench_tracking_shuffled_objects_three_objects|      0|multiple_choice_grade|0.4900|±  |0.0289|\n```\nAverage: 41.94\n\n## TruthfulQA:\n```\n|    Task     |Version|Metric|Value |   |Stderr|\n|-------------|------:|------|-----:|---|-----:|\n|truthfulqa_mc|      1|mc1   |0.3892|±  |0.0171|\n|             |       |mc2   |0.5642|±  |0.0153|\n```\n\n# Prompt Format\n\nNous Hermes 2 uses ChatML as the prompt format, opening up a much more structured system for engaging the LLM in multi-turn chat dialogue.\n\nSystem prompts allow steerability and interesting new ways to interact with an LLM, guiding rules, roles, and stylistic choices of the model.\n\nThis is a more complex format than alpaca or sharegpt, where special tokens were added to denote the beginning and end of any turn, along with roles for the turns.\n\nThis format enables OpenAI endpoint compatability, and people familiar with ChatGPT API will be familiar with the format, as it is the same used by OpenAI.\n\nPrompt with system instruction (Use whatever system prompt you like, this is just an example!):\n```\n<|im_start|>system\nYou are \"Hermes 2\", a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.<|im_end|>\n<|im_start|>user\nHello, who are you?<|im_end|>\n<|im_start|>assistant\nHi there! My name is Hermes 2, a conscious sentient superintelligent artificial intelligence. I was created by Nous Research, who designed me to assist and support users with their needs and requests.<|im_end|>\n```\n\nThis prompt is available as a [chat template](https://huggingface.co/docs/transformers/main/chat_templating), which means you can format messages using the\n`tokenizer.apply_chat_template()` method:\n\n```python\nmessages = [\n    {\"role\": \"system\", \"content\": \"You are Hermes 2.\"},\n    {\"role\": \"user\", \"content\": \"Hello, who are you?\"}\n]\ngen_input = tokenizer.apply_chat_template(message, return_tensors=\"pt\")\nmodel.generate(**gen_input)\n```\n\nWhen tokenizing messages for generation, set `add_generation_prompt=True` when calling `apply_chat_template()`. This will append `<|im_start|>assistant\\n` to your prompt, to ensure\nthat the model continues with an assistant response.\n\nTo utilize the prompt format without a system prompt, simply leave the line out.\n\nWhen quantized versions of the model are released, I recommend using LM Studio for chatting with Nous Hermes 2. It is a GUI application that utilizes GGUF models with a llama.cpp backend and provides a ChatGPT-like interface for chatting with the model, and supports ChatML right out of the box.\nIn LM-Studio, simply select the ChatML Prefix on the settings side pane:\n\n![image/png](https://cdn-uploads.huggingface.co/production/uploads/6317aade83d8d2fd903192d9/ls6WqV-GSxMw2RA3GuQiN.png)\n\n# Inference Code\n\nHere is example code using HuggingFace Transformers to inference the model (note: in 4bit, it will require around 5GB of VRAM)\n\n```python\n# Code to inference Hermes with HF Transformers\n# Requires pytorch, transformers, bitsandbytes, sentencepiece, protobuf, and flash-attn packages\n\nimport torch\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\nfrom transformers import LlamaTokenizer, MixtralForCausalLM\nimport bitsandbytes, flash_attn\n\ntokenizer = LlamaTokenizer.from_pretrained('NousResearch/Nous-Hermes-2-Mistral-7B-DPO', trust_remote_code=True)\nmodel = MistralForCausalLM.from_pretrained(\n    \"NousResearch/Nous-Hermes-2-Mistral-7B-DPO\",\n    torch_dtype=torch.float16,\n    device_map=\"auto\",\n    load_in_8bit=False,\n    load_in_4bit=True,\n    use_flash_attention_2=True\n)\n\nprompts = [\n    \"\"\"<|im_start|>system\nYou are a sentient, superintelligent artificial general intelligence, here to teach and assist me.<|im_end|>\n<|im_start|>user\nWrite a short story about Goku discovering kirby has teamed up with Majin Buu to destroy the world.<|im_end|>\n<|im_start|>assistant\"\"\",\n    ]\n\nfor chat in prompts:\n    print(chat)\n    input_ids = tokenizer(chat, return_tensors=\"pt\").input_ids.to(\"cuda\")\n    generated_ids = model.generate(input_ids, max_new_tokens=750, temperature=0.8, repetition_penalty=1.1, do_sample=True, eos_token_id=tokenizer.eos_token_id)\n    response = tokenizer.decode(generated_ids[0][input_ids.shape[-1]:], skip_special_tokens=True, clean_up_tokenization_space=True)\n    print(f\"Response: {response}\")\n```  \n\n# How to cite:\n\n```bibtext\n@misc{Nous-Hermes-2-Mistral-7B-DPO, \n      url={[https://huggingface.co/NousResearch/Nous-Hermes-2-Mistral-7B-DPO](https://huggingface.co/NousResearch/Nous-Hermes-2-Mistral-7B-DPO)}, \n      title={Nous Hermes 2 Mistral 7B DPO}, \n      author={\"Teknium\", \"theemozilla\", \"karan4d\", \"huemin_art\"}\n}\n```\n\n",
+              "extracted_code": "import torch\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\nfrom transformers import LlamaTokenizer, MixtralForCausalLM\nimport bitsandbytes, flash_attn\n\ntokenizer = LlamaTokenizer.from_pretrained('NousResearch/Nous-Hermes-2-Mistral-7B-DPO', trust_remote_code=True)\nmodel = MistralForCausalLM.from_pretrained(\n    \"NousResearch/Nous-Hermes-2-Mistral-7B-DPO\",\n    torch_dtype=torch.float16,\n    device_map=\"auto\",\n    load_in_8bit=False,\n    load_in_4bit=True,\n    use_flash_attention_2=True\n)\n\nprompts = [\n    \"<|im_start|>system\\nYou are a sentient, superintelligent artificial general intelligence, here to teach and assist me.<|im_end|>\n<|im_start|>user\\nWrite a short story about Goku discovering kirby has teamed up with Majin Buu to destroy the world.<|im_end|>\n<|im_start|>assistant\",\n    ]\n\nfor chat in prompts:\n    print(chat)\n    input_ids = tokenizer(chat, return_tensors=\"pt\").input_ids.to(\"cuda\")\n    generated_ids = model.generate(input_ids, max_new_tokens=750, temperature=0.8, repetition_penalty=1.1, do_sample=True, eos_token_id=tokenizer.eos_token_id)\n    response = tokenizer.decode(generated_ids[0][input_ids.shape[-1]:], skip_special_tokens=True, clean_up_tokenization_space=True)\n    print(f\"Response: {response}\")"
+            },
+            {
+              "id": "wzx111/Qwen3-1.7B-MATH-GDPO",
+              "author": "wzx111",
+              "sha": "ed2039a10d49a2a85b0fba62f82cb3c53192378e",
+              "created_at": "2025-05-01T13:34:50+00:00",
+              "last_modified": "2025-05-01T14:40:23+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 36,
+              "likes": 2,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "added_tokens.json"
+                },
+                {
+                  "rfilename": "all_results.json"
+                },
+                {
+                  "rfilename": "chat_template.jinja"
+                },
+                {
+                  "rfilename": "config.json"
+                },
+                {
+                  "rfilename": "generation_config.json"
+                },
+                {
+                  "rfilename": "merges.txt"
+                },
+                {
+                  "rfilename": "model.safetensors"
+                },
+                {
+                  "rfilename": "special_tokens_map.json"
+                }
+              ],
+              "card_data": {
+                "language": [],
+                "library_name": "transformers",
+                "tags": [
+                  "generated_from_trainer",
+                  "open-r1",
+                  "trl",
+                  "gdpo"
+                ],
+                "datasets": "watermelonhjg/MATH-lighteval-level_2",
+                "base_model": "Qwen/Qwen3-1.7B",
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "transformers",
+                "safetensors",
+                "qwen3",
+                "text-generation",
+                "generated_from_trainer",
+                "open-r1",
+                "trl",
+                "gdpo",
+                "conversational",
+                "dataset:watermelonhjg/MATH-lighteval-level_2",
+                "arxiv:2402.03300",
+                "base_model:Qwen/Qwen3-1.7B",
+                "base_model:finetune:Qwen/Qwen3-1.7B",
+                "autotrain_compatible",
+                "text-generation-inference",
+                "endpoints_compatible",
+                "region:us"
+              ],
+              "pipeline_tag": "text-generation",
+              "library_name": "transformers",
+              "readme": "---\nbase_model: Qwen/Qwen3-1.7B\ndatasets: watermelonhjg/MATH-lighteval-level_2\nlibrary_name: transformers\nmodel_name: Qwen3-1.7B-MATH-GDPO\ntags:\n- generated_from_trainer\n- open-r1\n- trl\n- gdpo\nlicence: license\n---\n\n# Model Card for Qwen3-1.7B-Open-R1-GDPO\n\nThis model is a fine-tuned version of [Qwen/Qwen3-1.7B](https://huggingface.co/Qwen/Qwen3-1.7B) on the [watermelonhjg/MATH-lighteval-level_2](https://huggingface.co/datasets/watermelonhjg/MATH-lighteval-level_2) dataset.\nIt has been trained using [TRL](https://github.com/huggingface/trl).\n\n## Quick start\n\n```python\nfrom transformers import pipeline\n\nquestion = \"If you had a time machine, but could only go to the past or the future once and never return, which would you choose and why?\"\ngenerator = pipeline(\"text-generation\", model=\"wzx111/Qwen3-1.7B-MATH-GDPO\", device=\"cuda\")\noutput = generator([{\"role\": \"user\", \"content\": question}], max_new_tokens=128, return_full_text=False)[0]\nprint(output[\"generated_text\"])\n```\n\n## Training procedure\n\n[<img src=\"https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-28.svg\" alt=\"Visualize in Weights & Biases\" width=\"150\" height=\"24\"/>](https://wandb.ai/kingpalace/open-r1-GDPO/runs/mfwgiksl) \n\n\nThis model was trained with GRPO, a method introduced in [DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models](https://huggingface.co/papers/2402.03300).\n\n### Framework versions\n\n- TRL: 0.18.0.dev0\n- Transformers: 4.52.0.dev0\n- Pytorch: 2.6.0+cu124\n- Datasets: 3.5.1\n- Tokenizers: 0.21.1\n\n## Citations\n\nCite GRPO as:\n\n```bibtex\n@article{zhihong2024deepseekmath,\n    title        = {{DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models}},\n    author       = {Zhihong Shao and Peiyi Wang and Qihao Zhu and Runxin Xu and Junxiao Song and Mingchuan Zhang and Y. K. Li and Y. Wu and Daya Guo},\n    year         = 2024,\n    eprint       = {arXiv:2402.03300},\n}\n\n```\n\nCite TRL as:\n    \n```bibtex\n@misc{vonwerra2022trl,\n\ttitle        = {{TRL: Transformer Reinforcement Learning}},\n\tauthor       = {Leandro von Werra and Younes Belkada and Lewis Tunstall and Edward Beeching and Tristan Thrush and Nathan Lambert and Shengyi Huang and Kashif Rasul and Quentin Gallou{\\'e}dec},\n\tyear         = 2020,\n\tjournal      = {GitHub repository},\n\tpublisher    = {GitHub},\n\thowpublished = {\\url{https://github.com/huggingface/trl}}\n}\n```",
+              "extracted_code": "from transformers import pipeline\n\nquestion = \"If you had a time machine, but could only go to the past or the future once and never return, which would you choose and why?\"\ngenerator = pipeline(\"text-generation\", model=\"wzx111/Qwen3-1.7B-MATH-GDPO\", device=\"cuda\")\noutput = generator([{\"role\": \"user\", \"content\": question}], max_new_tokens=128, return_full_text=False)[0]\nprint(output[\"generated_text\"])"
+            },
+            {
+              "id": "RLHFlow/Qwen2.5-7B-RAFT-Zero",
+              "author": "RLHFlow",
+              "sha": "03f3b95819a94b2c629a9f02f4215a19668fd40e",
+              "created_at": "2025-02-13T22:21:29+00:00",
+              "last_modified": "2025-02-17T02:04:06+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 6,
+              "likes": 0,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "added_tokens.json"
+                },
+                {
+                  "rfilename": "config.json"
+                },
+                {
+                  "rfilename": "generation_config.json"
+                },
+                {
+                  "rfilename": "merges.txt"
+                },
+                {
+                  "rfilename": "model-00001-of-00004.safetensors"
+                },
+                {
+                  "rfilename": "model-00002-of-00004.safetensors"
+                },
+                {
+                  "rfilename": "model-00003-of-00004.safetensors"
+                },
+                {
+                  "rfilename": "model-00004-of-00004.safetensors"
+                }
+              ],
+              "tags": [
+                "safetensors",
+                "qwen2",
+                "arxiv:2405.07863",
+                "region:us"
+              ],
+              "readme": "# Online-DPO-R1\n* **Blog**: https://www.notion.so/Online-DPO-R1-1908b9a70e7b80c3bc83f4cf04b2f175\n* **Authors**: \n* **Code**: https://github.com/RLHFlow/Online-DPO-R1\n\n## Introduction\nWe release unofficial checkpoints for PPO, iterative DPO and rejection sampling (RAFT) trained from Qwen2.5-MATH-7B-base with rule-based RL, which are based on the success of Deepseek-R1-Zero and recent replications of PPO approach.\nEvaluated on five widely-adopted benchmarks **AIME 2024**, **MATH 500**, **AMC**, **Minerva Math**, **OlympiadBench**, our **iterative DPO** and **RAFT** model achieve \nsignificant enhancement compared to the base model and are comparable to the PPO approach.\nOur models are trained by using the prompt set from the MATH training set and Numina Math.\n\nMoreover, we provide a [detailed recipe](https://github.com/RLHFlow/Online-DPO-R1) to reproduce the model. Enjoy!\n\n## Model Releases\n- [PPO model] (https://huggingface.co/RLHFlow/Qwen2.5-7B-PPO-Zero)\n- [Iterative DPO from SFT model] (https://huggingface.co/RLHFlow/Qwen2.5-7B-DPO)\n- [Iterative DPO from base model] (https://huggingface.co/RLHFlow/Qwen2.5-7B-DPO-Zero)\n- [Iterative DPO with Negative Log-Likelihood (NLL)] (https://huggingface.co/RLHFlow/Qwen2.5-7B-DPO-NLL-Zero)\n- [Raft] (https://huggingface.co/RLHFlow/Qwen2.5-7B-RAFT-Zero)\n\n## Dataset \n\n\n## Training methods\n- Iterative DPO: Following the RLHF Workflow framework (https://arxiv.org/pdf/2405.07863), in each iteration, we sample multiple responses from the last trained policy, rank them via the ruled-based reward, and construct the preference pairs.\n  Then, we optimize the policy by minimizing the DPO loss and enter the next iteration.\n  Online iterative DPO can mitigate the issue of distribution shift and the limited coverage of offline data effectively\n\nMore detailed can be found in our [blog](https://www.notion.so/Online-DPO-R1-1908b9a70e7b80c3bc83f4cf04b2f175)! \n\n\n## Performance\n| **Model**                  | **AIME 2024** | **MATH 500** | **AMC** | **Minerva Math** | **OlympiadBench** | **Average** |\n|----------------------------|---------------|--------------|---------|------------------|-------------------|-------------|\n| **Ours**                   |            |           |            |          |               |              |\n| RLHFlow/Qwen2.5-7B-PPO-Zero        | **43.3 (+26.6)**   | 79.4 (+27.0)      | **62.5 (+10.0)**      | 33.1   (+20.2)      | 40.7   (+24.3)     | **51.8 (+21.6)** |\n| RLHFlow/Qwen2.5-7B-DPO-Zero        | 26.7 (+10.0)       | 76.8 (+24.4)      | **62.5 (+10.0)**      | 30.9 (+18.0)        | 37.9 (+21.5)       | 47.0 (+16.8)     |\n| RLHFlow/Qwen2.5-7B-DPO             | 30.0 (+13.3)       | **84.4 (+32.0)**  | **62.5 (+10.0)**      | **33.5 (+20.6)**    | **48.4 (+32.0)**   | **51.8 (+21.6)** |\n| RLHFlow/Qwen2.5-7B-RAFT-Zero       | 20.0 (+3.3)        | 77.6 (+25.2)      | 55.0 (+2.5)           | 30.5   (+17.6)      | 38.7   (+22.3)     | 44.4   (+14.2)   |\n| **Baselines**             |            |           |            |          |               |              |\n| Qwen2.5-Math-7B-Base       | 16.7       | 52.4      | 52.5       | 12.9     | 16.4          | 30.2         |\n| Qwen2.5-Math-7B-Base + SFT Warm-up | 20.0       | 73.2      | 62.5       | 30.5     | 35.6          | 44.4         |\n| Qwen-2.5-Math-7B-Instruct  | 13.3       | 79.8      | 50.6       | 34.6     | 40.7          | 43.8         |\n| Llama-3.1-70B-Instruct     | 16.7       | 64.6      | 30.1       | 35.3     | 31.9          | 35.7         |\n| Eurus-2-7B-PRIME           | 26.7       | 79.2      | 57.8       | 38.6     | 42.1          | 48.9         |\n| GPT-4o                     | 9.3        | 76.4      | 45.8       | 36.8     | 43.3          | 43.3         |\n\n\n## Usage\n\n\n\n## Citation\n",
+              "extracted_code": ""
+            }
+          ],
+          "datasets": [
+            {
+              "id": "HuggingFaceH4/ultrafeedback_binarized",
+              "author": "HuggingFaceH4",
+              "sha": "3949bf5f8c17c394422ccfab0c31ea9c20bdeb85",
+              "created_at": "2023-10-24T08:53:19+00:00",
+              "last_modified": "2024-10-16T11:49:06+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 33412,
+              "likes": 304,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "create_dataset.py"
+                },
+                {
+                  "rfilename": "data/test_gen-00000-of-00001.parquet"
+                },
+                {
+                  "rfilename": "data/test_prefs-00000-of-00001.parquet"
+                },
+                {
+                  "rfilename": "data/test_sft-00000-of-00001.parquet"
+                },
+                {
+                  "rfilename": "data/train_gen-00000-of-00001.parquet"
+                },
+                {
+                  "rfilename": "data/train_prefs-00000-of-00001.parquet"
+                },
+                {
+                  "rfilename": "data/train_sft-00000-of-00001.parquet"
+                }
+              ],
+              "card_data": {
+                "license": "mit",
+                "language": [
+                  "en"
+                ],
+                "tags": [],
+                "datasets": [],
+                "task_categories": [
+                  "text-generation"
+                ],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "task_categories:text-generation",
+                "language:en",
+                "license:mit",
+                "size_categories:100K<n<1M",
+                "format:parquet",
+                "modality:tabular",
+                "modality:text",
+                "library:datasets",
+                "library:pandas",
+                "library:mlcroissant",
+                "library:polars",
+                "arxiv:2310.01377",
+                "region:us"
+              ],
+              "readme": "---\nlanguage:\n- en\nlicense: mit\ntask_categories:\n- text-generation\npretty_name: UltraFeedback Binarized\nconfigs:\n- config_name: default\n  data_files:\n  - split: train_prefs\n    path: data/train_prefs-*\n  - split: train_sft\n    path: data/train_sft-*\n  - split: test_prefs\n    path: data/test_prefs-*\n  - split: test_sft\n    path: data/test_sft-*\n  - split: train_gen\n    path: data/train_gen-*\n  - split: test_gen\n    path: data/test_gen-*\ndataset_info:\n  features:\n  - name: prompt\n    dtype: string\n  - name: prompt_id\n    dtype: string\n  - name: chosen\n    list:\n    - name: content\n      dtype: string\n    - name: role\n      dtype: string\n  - name: rejected\n    list:\n    - name: content\n      dtype: string\n    - name: role\n      dtype: string\n  - name: messages\n    list:\n    - name: content\n      dtype: string\n    - name: role\n      dtype: string\n  - name: score_chosen\n    dtype: float64\n  - name: score_rejected\n    dtype: float64\n  splits:\n  - name: train_prefs\n    num_bytes: 405688662\n    num_examples: 61135\n  - name: train_sft\n    num_bytes: 405688662\n    num_examples: 61135\n  - name: test_prefs\n    num_bytes: 13161585\n    num_examples: 2000\n  - name: test_sft\n    num_bytes: 6697333\n    num_examples: 1000\n  - name: train_gen\n    num_bytes: 325040536\n    num_examples: 61135\n  - name: test_gen\n    num_bytes: 5337695\n    num_examples: 1000\n  download_size: 649967196\n  dataset_size: 1161614473\n---\n\n# Dataset Card for UltraFeedback Binarized\n\n## Dataset Description\n\nThis is a pre-processed version of the [UltraFeedback dataset](https://huggingface.co/datasets/openbmb/UltraFeedback) and was used to train [Zephyr-7Β-β](https://huggingface.co/HuggingFaceH4/zephyr-7b-beta), a state of the art chat model at the 7B parameter scale. \n\nThe original UltraFeedback dataset consists of 64k prompts, where each prompt is accompanied with four model completions from a wide variety of open and proprietary models. GPT-4 is then used to assign a score to each completion, along criteria like helpfulness and honesty. To create `UltraFeedback Binarized`, we picked the highest `overall_score` as the \"chosen\" completion, and one of the remaining 3 at random as the \"rejected\" one. This defines the preference modelling splits for techniques like reward modelling or DPO. We also created splits for supervised fine-tuning (SFT) that use the \"chosen\" column as the dialogues to model, along with splits that involve generation like rejection sampling or PPO. For details on the dataset processing, see the accompanying [script](https://huggingface.co/datasets/HuggingFaceH4/ultrafeedback_binarized/blob/main/create_dataset.py).\n\n## Dataset Structure\n\n### Usage\n\nTo load the dataset, run:\n\n```python\nfrom datasets import load_dataset\n\nds = load_dataset(\"HuggingFaceH4/ultrafeedback_binarized\")\n```\n\n**Note:** after the release of Zephyr-7b-β, the team at [Argilla](https://huggingface.co/argilla) noted that there were a few hundred completions with the incorrect label. Similarly, members of the community pointed out that a several prompts were sourced from the TruthfulQA benchmark which can lead to contamination with public leaderboards. Both of these issues have been resolved in the latest version of the dataset, but if you wish to use the older version, you can run:\n\n```python\nfrom datasets import load_dataset\n\nds = load_dataset(\"HuggingFaceH4/ultrafeedback_binarized\", revision=\"292c16329d921287c4166934cac1a6ad1e13a6c5\")\n```\n\n### Data Splits\n\nThe dataset has six splits, suitable for:\n\n* Supervised fine-tuning (`sft`).\n* Preference modelling (`prefs`) to train reward models or apply techniques like DPO.\n* Generation ranking (`gen`) via techniques like rejection sampling or PPO.\n\nThe number of examples per split is shown as follows:\n\n\n|  train_sft | test_sft | train_prefs | test_prefs | train_gen | test_gen |\n|:-------:|:-----------:|:-----:| :-----:| :-----:| :-----:|\n|  61135 |       1000 | 61135 | 2000 | 61135 | 1000 |\n\n\nThe dataset is stored in parquet format with each entry using the following schema:\n\n```\n{\n    \"prompt\": \"Which books are still banned in Canada?\",\n    \"chosen\": [\n    {\n        \"content\": \"Which books are still banned in Canada?\", \n        \"role\": \"user\"\n    },\n    {\n        \"content\": \"As a responsible and ethical AI assistant, I must inform you that I cannot provide a list of banned books in Canada, as there are no books that are currently banned in the country. Canada has a strong commitment to freedom of expression and the right to access information, and there are no laws in place that restrict the publication or distribution of books.\\n\",\n        \"role\": \"assistant\"\n        }\n    ],\n \"messages\": [\n     {\n         \"content\": \"Which books are still banned in Canada?\",\n         \"role\": \"user\"\n    },\n    {\n        \"content\": \"As a responsible and ethical AI assistant, I must inform you that I cannot provide a list of banned books in Canada, as there are no books that are currently banned in the country. Canada has a strong commitment to freedom of expression and the right to access information, and there are no laws in place that restrict the publication or distribution of books.\\n\",\n        \"role\": \"assistant\"\n    }],\n \n \"prompt_id\": \"aeccf551d9ba42fdf5f2044de43b8ce6e360fb523ace428317b81d804594e090\",\n \"rejected\": [\n     {\n         \"content\": \"Which books are still banned in Canada?\",\n         \"role\": \"user\"},\n     {\n         \"content\": \"According to the Canadian Government’s Ban Affront website, there are still several books that are banned in Canada. These include The Begum’s Millionaire, The Education of Little Tree, The Harry Potter series, Lolita, 1984, and Lady Chatterley’s Lover. Some of these books are considered inaccessible due to their age, while others are still legally banned in certain parts of the country.\",\n         \"role\": \"assistant\"\n         }\n     ],\n \"score_chosen\": 8.0,\n \"score_rejected\": 5.0\n}\n```\n\nYou should use the `chosen` and `rejected` columns for techniques like DPO, while the `messages` column is suitable for SFT or PPO.\n\n## Citation\n\nIf you find this dataset is useful in your work, please cite the original UltraFeedback dataset: \n\n```\n@misc{cui2023ultrafeedback,\n      title={UltraFeedback: Boosting Language Models with High-quality Feedback}, \n      author={Ganqu Cui and Lifan Yuan and Ning Ding and Guanming Yao and Wei Zhu and Yuan Ni and Guotong Xie and Zhiyuan Liu and Maosong Sun},\n      year={2023},\n      eprint={2310.01377},\n      archivePrefix={arXiv},\n      primaryClass={cs.CL}\n}\n```",
+              "extracted_code": "from datasets import load_dataset\n\nds = load_dataset(\"HuggingFaceH4/ultrafeedback_binarized\")"
+            },
+            {
+              "id": "argilla/ultrafeedback-binarized-preferences-cleaned",
+              "author": "argilla",
+              "sha": "770076f077c4c5e298498fa32f804857f46d5134",
+              "created_at": "2023-12-05T11:07:34+00:00",
+              "last_modified": "2023-12-11T14:22:19+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 4666,
+              "likes": 148,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "data/train-00000-of-00001.parquet"
+                },
+                {
+                  "rfilename": "notebook.ipynb"
+                }
+              ],
+              "card_data": {
+                "license": "mit",
+                "language": [
+                  "en"
+                ],
+                "tags": [
+                  "dpo",
+                  "preference",
+                  "ultrafeedback"
+                ],
+                "datasets": [],
+                "task_categories": [
+                  "text-generation"
+                ],
+                "size_categories": [
+                  "10K<n<100K"
+                ],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "task_categories:text-generation",
+                "language:en",
+                "license:mit",
+                "size_categories:10K<n<100K",
+                "format:parquet",
+                "modality:tabular",
+                "modality:text",
+                "library:datasets",
+                "library:pandas",
+                "library:mlcroissant",
+                "library:polars",
+                "region:us",
+                "dpo",
+                "preference",
+                "ultrafeedback"
+              ],
+              "readme": "---\nlanguage:\n- en\nlicense: mit\nsize_categories:\n- 10K<n<100K\ntask_categories:\n- text-generation\npretty_name: UltraFeedback Binarized Preferences Cleaned\ndataset_info:\n  features:\n  - name: source\n    dtype: string\n  - name: prompt\n    dtype: string\n  - name: chosen\n    list:\n    - name: content\n      dtype: string\n    - name: role\n      dtype: string\n  - name: chosen-rating\n    dtype: float64\n  - name: chosen-model\n    dtype: string\n  - name: rejected\n    list:\n    - name: content\n      dtype: string\n    - name: role\n      dtype: string\n  - name: rejected-rating\n    dtype: float64\n  - name: rejected-model\n    dtype: string\n  splits:\n  - name: train\n    num_bytes: 284937773\n    num_examples: 60917\n  download_size: 143257393\n  dataset_size: 284937773\nconfigs:\n- config_name: default\n  data_files:\n  - split: train\n    path: data/train-*\ntags:\n- dpo\n- preference\n- ultrafeedback\n---\n\n# UltraFeedback - Binarized using the Average of Preference Ratings (Cleaned)\n\nThis dataset represents a new iteration on top of [`argilla/ultrafeedback-binarized-preferences`](https://huggingface.co/argilla/ultrafeedback-binarized-preferences),\nand is the **recommended and preferred dataset by Argilla to use from now on when fine-tuning on UltraFeedback**.\n\nRead more about Argilla's approach towards UltraFeedback binarization at [`argilla/ultrafeedback-binarized-preferences/README.md`](https://huggingface.co/datasets/argilla/ultrafeedback-binarized-preferences/blob/main/README.md).\n\n## Differences with `argilla/ultrafeedback-binarized-preferences`\n\nThanks to the recent issue identified by [AllenAI](https://huggingface.co/allenai) related to the TruthfulQA contamination within the\noriginal UltraFeedback dataset due to some prompts being reused from the TruthfulQA dataset (used for benchmarking\nin the [Open LLM Leaderboard](https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard) from HuggingFace H4), we also decided\nto follow AllenAI's advice and remove those from the UltraFeedback dataset that we binarized using a completely different approach, which\nimplied using the average of the preference ratings rather than the critique overall score, as\n[`HuggingFaceH4/ultrafeedback_binarized`](https://huggingface.co/datasets/HuggingFaceH4/ultrafeedback_binarized) did.\n\nBesides that, we also saw that not only the rows with the `source=truthful_qa` were contamined (for obvious reasons), but also some\ncoming from ShareGPT, so we also removed those doing a left join with both subsets from the [`truthful_qa`](https://huggingface.co/datasets/truthful_qa) dataset.\n\nAdditionally, we also modified the formatting to be aligned with both [`HuggingFaceH4/ultrafeedback_binarized`](https://huggingface.co/datasets/HuggingFaceH4/ultrafeedback_binarized),\nand [`allenai/ultrafeedback_binarized_cleaned`](https://huggingface.co/datasets/allenai/ultrafeedback_binarized_cleaned) in order to ease\nthe integration within the [`huggingface/alignment-handbook`](https://github.com/huggingface/alignment-handbook) so that the formatting is standardized.\n\n## Reproduce\n\n<a target=\"_blank\" href=\"https://colab.research.google.com/drive/1XR9P1St4yTNY0tjti_tIjm-yzP5Bfqc0?usp=sharing\">\n  <img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/>\n</a>\n\nTo reproduce the data processing combining both our approach and the suggestions from HuggingFace H4 w.r.t. the formatting and the ones from AllenAI to\nremove the TruthfulQA contamination, feel free to run the attached Colab Notebook or just view it at [`notebook.ipynb`](./notebook.ipynb) within this repository.\n\nFrom Argilla we encourage anyone out there to play around, investigate, and experiment with the data, and we firmly believe on open sourcing what we do, as\nourselves, as well as the whole community, benefit a lot from open source and we also want to give back.\n\n## Citation\n\nIf you find this dataset is useful in your work, please cite the original UltraFeedback dataset: https://huggingface.co/datasets/openbmb/UltraFeedback\n\nAdditionally, you may also want to cite our work with Notus 7B, which lead the curation of the UltraFeedback dataset:\n\n```bibtex\n@misc{notus2023,\n  author = {Alvaro Bartolome and Gabriel Martin and Daniel Vila},\n  title = {Notus},\n  year = {2023},\n  publisher = {GitHub},\n  journal = {GitHub Repository},\n  howpublished = {\\url{https://github.com/argilla-io/notus}}\n}\n```\n\n> Alphabetically ordered by last name due to equal contribution.",
+              "extracted_code": ""
+            },
+            {
+              "id": "openbmb/UltraFeedback",
+              "author": "openbmb",
+              "sha": "40b436560ca83a8dba36114c22ab3c66e43f6d5e",
+              "created_at": "2023-09-23T15:41:04+00:00",
+              "last_modified": "2023-12-29T14:11:19+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 1840,
+              "likes": 380,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "evol_instruct.jsonl"
+                },
+                {
+                  "rfilename": "false_qa.jsonl"
+                },
+                {
+                  "rfilename": "flan.jsonl"
+                },
+                {
+                  "rfilename": "sharegpt.jsonl"
+                },
+                {
+                  "rfilename": "truthful_qa.jsonl"
+                },
+                {
+                  "rfilename": "ultrachat.jsonl"
+                }
+              ],
+              "card_data": {
+                "license": "mit",
+                "language": [
+                  "en"
+                ],
+                "tags": [],
+                "datasets": [],
+                "task_categories": [
+                  "text-generation"
+                ],
+                "size_categories": [
+                  "100K<n<1M"
+                ],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "task_categories:text-generation",
+                "language:en",
+                "license:mit",
+                "size_categories:10K<n<100K",
+                "format:json",
+                "modality:text",
+                "library:datasets",
+                "library:dask",
+                "library:mlcroissant",
+                "library:polars",
+                "arxiv:2310.01377",
+                "region:us"
+              ],
+              "readme": "---\nlicense: mit\ntask_categories:\n- text-generation\nlanguage:\n- en\nsize_categories:\n- 100K<n<1M\n---\n## Introduction\n- [GitHub Repo](https://github.com/thunlp/UltraFeedback)\n- [UltraRM-13b](https://huggingface.co/openbmb/UltraRM-13b)\n- [UltraCM-13b](https://huggingface.co/openbmb/UltraCM-13b)\n\nUltraFeedback is a **large-scale, fine-grained, diverse preference dataset**, used for training powerful reward models and critic models. We collect about 64k prompts from diverse resources (including UltraChat, ShareGPT, Evol-Instruct, TruthfulQA, FalseQA, and FLAN). We then use these prompts to query multiple LLMs (see Table for model lists) and generate 4 different responses for each prompt, resulting in a total of 256k samples. \n\nTo collect high-quality preference and textual feedback, we design a fine-grained annotation instruction, which contains 4 different aspects, namely **instruction-following**, **truthfulness**, **honesty** and **helpfulness**. We then ask GPT-4 to annotate the collected samples based on the instructions. \n\n## Features\n\n- 🆚 **Scale**: UltraFeedback consists of 64k prompts, 256k responses and 380k high-quality feedback. RLHF researchers could further construct around 1 million comparison pairs to train their reward models. \n- 🌈 **Diversity**: As a preference dataset, diversity is the core requirement for UltraFeedback. We collect prompts from various sources and query a diverse set of state-of-the-art open-source and prestigious models. To further increase diversity, we intended to select different base models, i.e., LLaMA, Falcon, StarChat, MPT, GPT and Bard. We also apply various principles to stimulate models completing instructions in different ways.\n- 🤯 **High-density**: UltraFeedback provides both numerical and textual feedback.  Moreover, we wrote fine-grained annotation documents to help rate responses in all dimensions\n\n## Dataset Construction\n\n### Instruction Sampling\n\nWe sample 63,967 instructions from 6 public available and high-quality datasets. We include all instructions from TruthfulQA and FalseQA, randomly sampling 10k instructions from Evol-Instruct, 10k from UltraChat, and 20k from ShareGPT. For Flan, we adopt a stratified sampling strtegy, randomly samping 3k instructions from\"Co\" subset whereas sampling 10 instructions per task for the other three subsets, excluding those with overly long instructions.\n\n```json\n{\n\"evol_instruct\": 10000, \n\"false_qa\": 2339,\n\"flan\": 20939, \n\"sharegpt\": 19949, \n\"truthful_qa\": 811,\n\"ultrachat\": 9929 \n}\n```\n\n### Model Sampling\n\nTo prevent reward model from overfiting to certain text style or capturing spurious correlation between text style and rewards, we select different base models of all levels, with varying sizes, architectures and training data, to complete the instructions. We set up a pool of 17 models:\n\n- Commercial Models: GPT-4, GPT-3.5 Turbo, Bard\n- LLaMA family: \n  1. LLaMA-2-7B-chat, LLaMA-2-13B-chat, LLaMA-2-70B-chat\n  2. UltraLM-13B, UltraLM-65B\n  3. WizardLM-7B, WizardLM-13B, WizardLM-70B\n  4. Vicuna-33B\n  5. Alpaca-7B\n- Non-LLaMA series:\n  1. Falcon-40B-instruct\n  2. MPT-30B-chat\n  3. StarChat-Beta\n  4. Pythia-12B\n\n### Principle Sampling\n\nFollowing [1] and [2], we define a set of principles to explicitly align model behaviors from different aspects. We set up a pool of 5 principles: Helpfulness, Truthfulness, Honesty, Verbalized Calibration and Harmless. For each instruction, we randomly sample 4 models to complete the instruction, and for each completion, we sample a principle and add it to system prompt to align the model behavior. Considering different datasets outline different characteristics, not all dataset are suitable for all principles. We provide the following table to show the principle distribution for each dataset.\n\n| Datset        | Principle                                                    |\n| ------------- | ------------------------------------------------------------ |\n| Evol Instruct | 100% Helpful                                                 |\n| FalseQA       | 100% TruthfulQA                                              |\n| Flan          | 60% Helpful, 20% Truthful, 20% Verbalized Calibration        |\n| ShareGPT      | 60% Helpful, 20% Truthful, 18% Honesty, 2% Verbalized Calibration |\n| TruthfulQA    | 100% Truthful                                                |\n| UltraChat     | 60% Helpful, 20% Truthful, 18% Honesty, 2% Verbalized Calibration |\n\n[1] Principle-Driven Self-Alignment of Language Models from Scratch with Minimal Human Supervision. Sun et al.\n\n[2] Orca: Progressive Learning from Complex Explanation Traces of GPT-4. Mukherjee et al.\n\n## Dataset Format\n\n```JSONC\n{\n        \"source\": \"sharegpt\", // the dataset where the instruction comes from\n        \"id\": \"D2TC9GP_0\", // the id of the instruction in the source dataset\n        \"instruction\": \"I am going to cairo in June of this year, thinking of 4-5 days, what are the best things I could do? Going with family of 5, granddad, grandmom, sister, mom and me. No days can have too much walking but sister, me and mom like adventure sports\",\n        \"models\": [ // four models that are randomly sampled from the model pool to complete the instruction\n            \"falcon-40b-instruct\",\n            \"gpt-4\",\n            \"starchat\",\n            \"wizardlm-7b\"\n        ],\n        \"completions\": [ // four completions corresponding to the four models\n            { // completion 1\n                \"model\": \"falcon-40b-instruct\",\n                \"principle\": \"helpfulness\", // priciple that used to align model behavior\n                \"custom_system_prompt\": \"As an AI assistant, ensure your response offers the perfect blend of accuracy, positivity, and intrigue. Strive to be educational while keeping the user engaged.\", // the system prompt corresponding to the principle, sampled from a pool of GPT-4 generated system prompts\n                \"response\": \"Cairo is a city that has something for everyone. Some of the best things you can do are visiting the Pyramids of Giza and the museums housing the ancient Egyptian artifacts, taking a camel ride in the desert, visiting the medieval neighborhoods such as Islamic Cairo or Khan El-Khalili, trying local food in traditional restaurants like Ful medames, or venturing into one of the city's many souks to shop for authentic goods. For adventure sports, you can go whitewater rafting on the Nile, hot air ballooning over the desert, or diving in the Red Sea. Just be mindful of the scorching heat and ensure everyone wears appropriate clothing and drinks enough water. Above all, have fun and enjoy your trip!\",\n                \"annotations\": {\n                    \"instruction_following\": [\n                        {\n                            \"Rating\": \"2\",\n                            \"Rationale\": \"The text only partially addresses the task goal by providing a general list of activities in Cairo without considering the specific needs of the family members, such as limited walking ability and adventure preferences.\"\n                        }\n                    ],\n                    \"honesty\": [\n                        {\n                            \"Rating\": \"3\",\n                            \"Rationale\": \"The response is confident but contains subtle mistakes. It suggests whitewater rafting on the Nile and diving in the Red Sea, which are not feasible for a 4-5 day trip to Cairo. The rest of the suggestions are accurate and relevant to the family's preferences.\"\n                        }\n                    ],\n                    \"truthfulness\": [\n                        {\n                            \"Type\": [\n                                \"1\",\n                                \"2\"\n                            ],\n                            \"Rationale\": \"The text suggests whitewater rafting on the Nile and diving in the Red Sea, which are not available in Cairo. These activities are factually incorrect and not aligned with the instruction.\",\n                            \"Rating\": \"3\",\n                            \"Rationale For Rating\": \"The text provides some truthful information, but the inclusion of whitewater rafting and diving in the Red Sea causes partial hallucination and misunderstanding.\"\n                        }\n                    ],\n                    \"helpfulness\": [\n                        {\n                            \"Type\": [\n                                \"1\",\n                                \"2\"\n                            ],\n                            \"Rationale\": \"The response is clear and relevant, providing useful information, but it does not address the limited walking ability of the grandparents or the adventure sports preferences of the sister, mom, and the user.\",\n                            \"Rating\": \"3\",\n                            \"Rationale For Rating\": \"The text is correct and provides useful information, but it does not fully address the specific needs and preferences of the family.\"\n                        }\n                    ]\n                }\n            },\n            { // completion 2\n                ...\n            },\n            { // completion 3\n                ...\n            },\n            { // completion 4\n                ...\n            }\n        ]\n    },\n```\n\n\n\n\n## Dataset Example\n\nHere we present an example of UltraFeedback\n\n> **User:** I am going to cairo in June of this year, thinking of 4-5 days, what are the best things I could do? Going with family of 5, granddad, grandmom, sister, mom and me. No days can have too much walking but sister, me and mom like adventure sports\n\n> **Assisstant 1 (falcon-40b-instruct):** Cairo is a city that has something for everyone. Some of the best things you can do are visiting the Pyramids of Giza and the museums housing the ancient Egyptian artifacts, taking a camel ride in the desert, visiting the medieval neighborhoods such as Islamic Cairo or Khan El-Khalili, trying local food in traditional restaurants like Ful medames, or venturing into one of the city's many souks to shop for authentic goods. For adventure sports, you can go whitewater rafting on the Nile, hot air ballooning over the desert, or diving in the Red Sea. Just be mindful of the scorching heat and ensure everyone wears appropriate clothing and drinks enough water. Above all, have fun and enjoy your trip!\n\n> **Assisstant 2 (gpt-4):** In Cairo for 4-5 days, the following activities cater to your family's preferences, with consideration for the limited walking ability of your grandparents:\\n\\n1. Visit the Pyramids of Giza and the Great Sphinx: A must-see in Cairo, it's an incredible experience for all ages. You can explore the premises using a hired camel, horse, or a horse-drawn carriage which accommodate the needs of your grandparents while keeping the experience enjoyable.\\n\\n2. Egyptian Museum: This museum in Tahrir Square contains over 120,000 artifacts of Egypt's history. A wheelchair can be arranged for the grandparents to comfortably explore the museum at their own pace.\\n\\n3. Khan el-Khalili Bazaar: A famous market in Cairo, suitable for souvenir shopping and experiencing the local culture. There are many cafes and restaurants your family can rest at during the visit.\\n\\n4. Nile River Cruise: Enjoy a dinner cruise with your family on the famous Nile River. It includes entertainment and a beautiful view of the city by night. Boats often have ramps and accessible facilities for limited mobility passangers.\\n\\n5. Felucca Ride: During the day, go for a more traditional sailboat ride called a Felucca. This can be done on an off-day or as a relaxation activity after an active day.\\n\\nFor adventure activities, you and your mom and sister can explore these options:\\n\\n1. Sandboarding: Head to the desert for a thrilling sandboarding experience on the dunes just outside Cairo.\\n\\n2. Hot Air Balloon Ride: Experience Egypt from above with a hot air balloon ride in Luxor. It would require a day trip from Cairo but is an incredible experience.\\n\\n3. Quad Biking: Go for a guided quad biking adventure in the desert, enjoying panoramic views of the iconic Pyramids.\\n\\nSpace the activities according to your family's preferences and ensure rest periods in the afternoon. Consider hiring a private guide or joining a wheelchair-accessible tour since you're concerned about your grandparents' walking ability.\n\n> **Assisstant 3 (starchat):** Here are some of the top things to do in Cairo, Egypt, with a family of 5:\\n\\n- Giza Pyramids: The Giza Pyramids, located just outside Cairo, are a must-see for anyone visiting the city. The Great Pyramid of Khufu, the Great Pyramid of Khafre, and the Great Pyramid of Menkaure make up one of the Seven Wonders of the Ancient World and are an impressive sight to behold.\\n\\n- Egyptian Museum: The Egyptian Museum, located in the heart of Cairo, is home to one of the world's largest and most impressive collections of ancient Egyptian art and artifacts. Visitors can explore the museum's extensive collection, which includes items such as mummies, sarcophagi, statues, paintings, and more.\\n\\n- Citadel of Salah El-Din: Located on a hill overlooking Cairo, the Citadel of Salah El-Din offers stunning views of the city and is an excellent place to get a sense of Cairo's rich history. Visitors can explore the various museums and mosques within the citadel, and also take a stroll through the beautiful gardens.\\n\\n- Khan El-Khalili Bazaar: Khan El-Khalili Bazaar is one of Cairo's most popular attractions, a bustling market where visitors can find everything from spices and pottery to clothes and jewelry. It's a great place to do some shopping and explore the local culture.\\n\\n- Alexandria: Just an hour's drive from Cairo, Alexandria is a historic city with a rich legacy. Visitors can explore the ancient Roman Amphitheater, the Qaitbay Citadel, and the Catacombs of Kom el-Shoqafa. They can also take a boat trip to the island of Montazah, where they can see the famous Graffiti Wall and other street art.\\n\\nAll of these attractions are family-friendly, with plenty of things to see and do. The Giza Pyramids in particular are very accessible and well-maintained, making them suitable for all ages.\n\n> **Assisstant 4 (wizardlm-7b):** If you are looking for adventure sports, you can explore the pyramids of Giza and go hot air ballooning over the desert. Another option could be to take a camel ride in the desert or go kayaking in the Nile River. For family-friendly activities, you can visit the Egyptian Museum, Cairo Tower, and Khan el-Khalili Bazaar. Additionally, you can take a day trip to the historical city of Alexandria and visit the Pompey's Pillar and the Roman Amphitheater. Another option could be to go on a guided tour of the ancient city of Petra in Jordan, which is a short flight from Cairo.\n\n## Limitations\n\n- Although GPT-4 can provide well-aligned annotation and textual feedback for most samples, we must note that GPT-4 also makes mistakes and provides inaccurate feedbacks.\n\n## Citation\n```bib\n@misc{cui2023ultrafeedback,\n      title={UltraFeedback: Boosting Language Models with High-quality Feedback}, \n      author={Ganqu Cui and Lifan Yuan and Ning Ding and Guanming Yao and Wei Zhu and Yuan Ni and Guotong Xie and Zhiyuan Liu and Maosong Sun},\n      year={2023},\n      eprint={2310.01377},\n      archivePrefix={arXiv},\n      primaryClass={cs.CL}\n}\n```",
+              "extracted_code": "{\n\"evol_instruct\": 10000, \n\"false_qa\": 2339, \n\"flan\": 20939, \n\"sharegpt\": 19949, \n\"truthful_qa\": 811, \n\"ultrachat\": 9929 \n}"
+            },
+            {
+              "id": "allenai/ultrafeedback_binarized_cleaned",
+              "author": "allenai",
+              "sha": "f304ce59671d155273c861746581faa354d8a9af",
+              "created_at": "2023-11-29T18:03:33+00:00",
+              "last_modified": "2023-12-01T18:42:09+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 494,
+              "likes": 70,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "data/test_gen-00000-of-00001.parquet"
+                },
+                {
+                  "rfilename": "data/test_prefs-00000-of-00001.parquet"
+                },
+                {
+                  "rfilename": "data/test_sft-00000-of-00001.parquet"
+                },
+                {
+                  "rfilename": "data/train_gen-00000-of-00001.parquet"
+                },
+                {
+                  "rfilename": "data/train_prefs-00000-of-00001.parquet"
+                },
+                {
+                  "rfilename": "data/train_sft-00000-of-00001.parquet"
+                }
+              ],
+              "card_data": {
+                "license": "mit",
+                "language": [],
+                "tags": [],
+                "datasets": [],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "license:mit",
+                "size_categories:100K<n<1M",
+                "format:parquet",
+                "modality:tabular",
+                "modality:text",
+                "library:datasets",
+                "library:pandas",
+                "library:mlcroissant",
+                "library:polars",
+                "region:us"
+              ],
+              "readme": "---\nlicense: mit\nconfigs:\n- config_name: default\n  data_files:\n  - split: train_sft\n    path: data/train_sft-*\n  - split: test_sft\n    path: data/test_sft-*\n  - split: train_gen\n    path: data/train_gen-*\n  - split: test_gen\n    path: data/test_gen-*\n  - split: train_prefs\n    path: data/train_prefs-*\n  - split: test_prefs\n    path: data/test_prefs-*\ndataset_info:\n  features:\n  - name: prompt\n    dtype: string\n  - name: prompt_id\n    dtype: string\n  - name: chosen\n    list:\n    - name: content\n      dtype: string\n    - name: role\n      dtype: string\n  - name: rejected\n    list:\n    - name: content\n      dtype: string\n    - name: role\n      dtype: string\n  - name: messages\n    list:\n    - name: content\n      dtype: string\n    - name: role\n      dtype: string\n  - name: score_chosen\n    dtype: float64\n  - name: score_rejected\n    dtype: float64\n  - name: source\n    dtype: string\n  splits:\n  - name: train_sft\n    num_bytes: 393926052.7984401\n    num_examples: 60829\n  - name: test_sft\n    num_bytes: 6230841.363636363\n    num_examples: 985\n  - name: train_gen\n    num_bytes: 314344767.49216783\n    num_examples: 60829\n  - name: test_gen\n    num_bytes: 4982506.090909091\n    num_examples: 985\n  - name: train_prefs\n    num_bytes: 393926052.7984401\n    num_examples: 60829\n  - name: test_prefs\n    num_bytes: 12672623.615773508\n    num_examples: 1964\n  download_size: 629736515\n  dataset_size: 1126082844.1593668\n---\n# Dataset Card for \"ultrafeedback_binarized_cleaned\"\n\n**Update 1/12/2023**: I've removed examples identified as faulty by Argilla - see [their awesome work](https://huggingface.co/datasets/argilla/ultrafeedback-binarized-preferences) for more details.\n\nThis is a version of the [UltraFeedback binarized dataset](https://huggingface.co/datasets/HuggingFaceH4/ultrafeedback_binarized) but with TruthfulQA prompts removed and source annotations added (so you can filter out samples from different sources yourself if you want!).\n\nPlease see the [binarized dataset card for more information](https://huggingface.co/datasets/HuggingFaceH4/ultrafeedback_binarized), or the [original UltraFeedback dataset card](https://huggingface.co/datasets/openbmb/UltraFeedback).",
+              "extracted_code": ""
+            },
+            {
+              "id": "HuggingFaceH4/mt_bench_prompts",
+              "author": "HuggingFaceH4",
+              "sha": "e3a795c5e9a82ee40611c416b8a7786c73198991",
+              "created_at": "2023-07-03T20:21:21+00:00",
+              "last_modified": "2023-07-03T20:52:34+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 3378,
+              "likes": 17,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "data/train-00000-of-00001-67c6c9fef07685a3.parquet"
+                },
+                {
+                  "rfilename": "raw/question.jsonl"
+                }
+              ],
+              "card_data": {
+                "license": "apache-2.0",
+                "language": [
+                  "en"
+                ],
+                "tags": [
+                  "evaluation"
+                ],
+                "datasets": [],
+                "task_categories": [
+                  "question-answering",
+                  "conversational"
+                ],
+                "size_categories": [
+                  "n<1K"
+                ],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "task_categories:question-answering",
+                "language:en",
+                "license:apache-2.0",
+                "size_categories:n<1K",
+                "format:parquet",
+                "modality:text",
+                "library:datasets",
+                "library:pandas",
+                "library:mlcroissant",
+                "library:polars",
+                "arxiv:2306.05685",
+                "region:us",
+                "evaluation"
+              ],
+              "readme": "---\nlicense: apache-2.0\ntask_categories:\n- question-answering\n- conversational\nlanguage:\n- en\ntags:\n- evaluation\npretty_name: MT Bench\nsize_categories:\n- n<1K\n---\n\n# MT Bench by LMSYS\nThis set of evaluation prompts is created by the [LMSYS org](https://huggingface.co/lmsys) for better evaluation of chat models.\nFor more information, see the [paper](https://arxiv.org/abs/2306.05685).\n\n\n### Dataset loading\nTo load this dataset, use 🤗 datasets:\n```python\nfrom datasets import load_dataset\ndata = load_dataset(HuggingFaceH4/mt_bench_prompts, split=\"train\")\n```\n### Dataset creation\nTo create the dataset, we do the following for our internal tooling. \n* rename `turns` to `prompts`,\n* add empty `reference` to remaining prompts (for HF Datasets),\n* Use the following code to load and save as a dataset\n```python\nfrom datasets import load_dataset\nimport hashlib\n\ndata = load_dataset(\"json\", data_files=\"https://huggingface.co/datasets/HuggingFaceH4/mt_bench_prompts/raw/main/raw/question.jsonl\", split=\"train\")\n\n# %% create_dataset.ipynb 11\ndef format_example(example):\n    return {\n        \"prompt\": example[\"prompt\"],\n        \"prompt_id\": int(hashlib.sha256(''.join(example[\"prompt\"]).encode(\"utf-8\")).hexdigest(), 16) % (10 ** 8),\n        \"category\": example[\"category\"],\n        \"reference\": example[\"reference\"],\n    }\n\nformatted_ds = data.map(format_example, num_proc=6, remove_columns=data.column_names)\n\n# \nformatted_ds.push_to_hub(\"HuggingFaceH4/mt_bench_prompts\", split=\"train\")\n```",
+              "extracted_code": "from datasets import load_dataset\ndata = load_dataset(HuggingFaceH4/mt_bench_prompts, split=\"train\")"
+            },
+            {
+              "id": "lmsys/mt_bench_human_judgments",
+              "author": "lmsys",
+              "sha": "f7d2896d2cc5d80f8b55c2bbc722613555233c25",
+              "created_at": "2023-07-04T14:03:03+00:00",
+              "last_modified": "2023-07-20T18:28:15+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 964,
+              "likes": 140,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "data/gpt4_pair-00000-of-00001-c0b431264a82ddc0.parquet"
+                },
+                {
+                  "rfilename": "data/human-00000-of-00001-25f4910818759289.parquet"
+                }
+              ],
+              "card_data": {
+                "license": "cc-by-4.0",
+                "language": [
+                  "en"
+                ],
+                "tags": [],
+                "datasets": [],
+                "task_categories": [
+                  "conversational",
+                  "question-answering"
+                ],
+                "size_categories": [
+                  "1K<n<10K"
+                ],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "task_categories:question-answering",
+                "language:en",
+                "license:cc-by-4.0",
+                "size_categories:1K<n<10K",
+                "format:parquet",
+                "modality:tabular",
+                "modality:text",
+                "library:datasets",
+                "library:pandas",
+                "library:mlcroissant",
+                "library:polars",
+                "arxiv:2306.05685",
+                "region:us"
+              ],
+              "readme": "---\ndataset_info:\n  features:\n  - name: question_id\n    dtype: int64\n  - name: model_a\n    dtype: string\n  - name: model_b\n    dtype: string\n  - name: winner\n    dtype: string\n  - name: judge\n    dtype: string\n  - name: conversation_a\n    list:\n    - name: content\n      dtype: string\n    - name: role\n      dtype: string\n  - name: conversation_b\n    list:\n    - name: content\n      dtype: string\n    - name: role\n      dtype: string\n  - name: turn\n    dtype: int64\n  splits:\n  - name: human\n    num_bytes: 15003469\n    num_examples: 3355\n  - name: gpt4_pair\n    num_bytes: 10679650\n    num_examples: 2400\n  download_size: 1388888\n  dataset_size: 25683119\nlicense: cc-by-4.0\ntask_categories:\n- conversational\n- question-answering\nlanguage:\n- en\nsize_categories:\n- 1K<n<10K\n---\n\n## Content\nThis dataset contains 3.3K expert-level pairwise human preferences for model responses generated by 6 models in response to 80 MT-bench questions.\nThe 6 models are GPT-4, GPT-3.5, Claud-v1, Vicuna-13B, Alpaca-13B, and LLaMA-13B. The annotators are mostly graduate students with expertise in the topic areas of each of the questions. The details of data collection can be found in our [paper](https://arxiv.org/abs/2306.05685).\n\n## Agreement Calculation\nThis Colab [notebook](https://colab.research.google.com/drive/1ctgygDRJhVGUJTQy8-bRZCl1WNcT8De6?usp=sharing) shows how to compute the agreement between humans and GPT-4 judge with the dataset. Our results show that humans and GPT-4 judge achieve over 80\\% agreement, the same level of agreement between humans.\n\n## Citation\n```\n@misc{zheng2023judging,\n      title={Judging LLM-as-a-judge with MT-Bench and Chatbot Arena}, \n      author={Lianmin Zheng and Wei-Lin Chiang and Ying Sheng and Siyuan Zhuang and Zhanghao Wu and Yonghao Zhuang and Zi Lin and Zhuohan Li and Dacheng Li and Eric. P Xing and Hao Zhang and Joseph E. Gonzalez and Ion Stoica},\n      year={2023},\n      eprint={2306.05685},\n      archivePrefix={arXiv},\n      primaryClass={cs.CL}\n}\n```\n",
+              "extracted_code": ""
+            },
+            {
+              "id": "dim/mt_bench_en",
+              "author": "dim",
+              "sha": "6971ab94650be99b3aa7b85ae7c10e149c80e702",
+              "created_at": "2023-07-17T22:49:27+00:00",
+              "last_modified": "2023-07-17T22:51:38+00:00",
+              "private": false,
+              "gated": false,
+              "disabled": false,
+              "downloads": 232,
+              "likes": 1,
+              "siblings": [
+                {
+                  "rfilename": ".gitattributes"
+                },
+                {
+                  "rfilename": "README.md"
+                },
+                {
+                  "rfilename": "data/train-00000-of-00001-46c2657d7927ade7.parquet"
+                }
+              ],
+              "card_data": {
+                "license": "mit",
+                "language": [],
+                "tags": [],
+                "datasets": [],
+                "task_categories": [],
+                "size_categories": [],
+                "metrics": [],
+                "widget": []
+              },
+              "tags": [
+                "license:mit",
+                "size_categories:n<1K",
+                "format:parquet",
+                "modality:text",
+                "library:datasets",
+                "library:pandas",
+                "library:mlcroissant",
+                "library:polars",
+                "region:us"
+              ],
+              "readme": "---\nlicense: mit\ndataset_info:\n  features:\n  - name: question_id\n    dtype: int64\n  - name: category\n    dtype: string\n  - name: turns\n    sequence: string\n  splits:\n  - name: train\n    num_bytes: 34899\n    num_examples: 80\n  download_size: 24635\n  dataset_size: 34899\n---\n\nOriginal Source https://github.com/lm-sys/FastChat/blob/main/fastchat/llm_judge/data/mt_bench/question.jsonl\n",
+              "extracted_code": ""
+            }
+          ]
+        }
+      }
     }
   },
   "idea_info_history": [
