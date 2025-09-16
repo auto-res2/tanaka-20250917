@@ -23,5 +23,5 @@ risk:
   K: 4
   
 output:
-  save_dir: ".research/iteration6"
+  save_dir: ".research/iteration7"
   log_interval: 100
