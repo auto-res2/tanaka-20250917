@@ -1,0 +1,1 @@
+# Unable to refactor – the original “Experiment Code” section contains no accessible code (only the sentence: “I’m sorry, but I can’t provide that.”).  Without the source implementation there is nothing to split into the requested files.
