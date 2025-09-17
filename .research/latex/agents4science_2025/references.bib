@@ -5,3 +5,457 @@
   publisher = {GitHub},
   url       = {https://github.com/airas-org/airas}
 }
+
+% ===========================================
+% REQUIRED CITATIONS
+% These papers must be cited in the manuscript
+% ===========================================
+
+@article{baheti-2023-leftover,
+ abstract = {Reinforcement Learning with Human Feedback (RLHF) is the most prominent
+method for Language Model (LM) alignment. However, RLHF is an unstable and
+data-hungry process that continually requires new high-quality LM-generated
+data for finetuning. We introduce Advantage-Leftover Lunch RL (A-LoL), a new
+class of offline policy gradient algorithms that enable RL training on any
+pre-existing data. By assuming the entire LM output sequence as a single
+action, A-LoL allows incorporating sequence-level classifiers or human-designed
+scoring functions as rewards. Subsequently, by using LM's value estimate, A-LoL
+only trains on positive advantage (leftover) data points, making it resilient
+to noise. Overall, A-LoL is an easy-to-implement, sample-efficient, and stable
+LM training recipe.
+  We demonstrate the effectiveness of A-LoL and its variants with a set of four
+different language generation tasks. We compare against both online RL (PPO)
+and recent preference-based (DPO, PRO) and reward-based (GOLD) offline RL
+baselines. On the commonly-used RLHF benchmark, Helpful and Harmless Assistant
+(HHA), LMs trained with A-LoL methods achieve the highest diversity while also
+being rated more safe and helpful than the baselines according to humans.
+Additionally, in the remaining three tasks, A-LoL could optimize multiple
+distinct reward functions even when using noisy or suboptimal training data.
+  We also release our experimental code. https://github.com/abaheti95/LoL-RL},
+ arxiv_url = {https://arxiv.org/pdf/2305.14718v5.pdf},
+ author = {Ashutosh Baheti and Ximing Lu and Faeze Brahman and Ronan Le Bras and Maarten Sap and Mark Riedl},
+ github_url = {https://github.com/abaheti95/LoL-RL},
+ title = {Leftover Lunch: Advantage-based Offline Reinforcement Learning for Language Models},
+ year = {2023}
+}
+
+@article{chaudhary-2025-risk,
+ abstract = {We consider the challenge of mitigating the generation of negative or toxic
+content by the Large Language Models (LLMs) in response to certain prompts. We
+propose integrating risk-averse principles into LLM fine-tuning to minimize the
+occurrence of harmful outputs, particularly rare but significant events. By
+optimizing the risk measure of Conditional Value at Risk (CVaR), our
+methodology trains LLMs to exhibit superior performance in avoiding toxic
+outputs while maintaining effectiveness in generative tasks. Empirical
+evaluations on sentiment modification and toxicity mitigation tasks demonstrate
+the efficacy of risk-averse reinforcement learning with human feedback (RLHF)
+in promoting a safer and more constructive online discourse environment.},
+ arxiv_url = {https://arxiv.org/pdf/2501.06911v1.pdf},
+ author = {Sapana Chaudhary and Ujwal Dinesha and Dileep Kalathil and Srinivas Shakkottai},
+ github_url = {https://github.com/SapanaChaudhary/RA-RLHF},
+ title = {Risk-Averse Fine-tuning of Large Language Models},
+ year = {2025}
+}
+
+@article{ethayarajh-2024-model,
+ abstract = {Kahneman & Tversky's $\textit{prospect theory}$ tells us that humans perceive
+random variables in a biased but well-defined manner (1992); for example,
+humans are famously loss-averse. We show that objectives for aligning LLMs with
+human feedback implicitly incorporate many of these biases -- the success of
+these objectives (e.g., DPO) over cross-entropy minimization can partly be
+ascribed to them belonging to a family of loss functions that we call
+$\textit{human-aware losses}$ (HALOs). However, the utility functions these
+methods attribute to humans still differ from those in the prospect theory
+literature. Using a Kahneman-Tversky model of human utility, we propose a HALO
+that directly maximizes the utility of generations instead of maximizing the
+log-likelihood of preferences, as current methods do. We call this approach
+KTO, and it matches or exceeds the performance of preference-based methods at
+scales from 1B to 30B, despite only learning from a binary signal of whether an
+output is desirable. More broadly, our work suggests that there is no one HALO
+that is universally superior; the best loss depends on the inductive biases
+most appropriate for a given setting, an oft-overlooked consideration.},
+ arxiv_url = {https://arxiv.org/pdf/2402.01306v4.pdf},
+ author = {Kawin Ethayarajh and Winnie Xu and Niklas Muennighoff and Dan Jurafsky and Douwe Kiela},
+ title = {Model Alignment as Prospect Theoretic Optimization},
+ year = {2024}
+}
+
+@article{furuta-2024-geometric,
+ abstract = {Many algorithms for aligning LLMs with human preferences assume that human
+preferences are binary and deterministic. However, human preferences can vary
+across individuals, and therefore should be represented distributionally. In
+this work, we introduce the distributional soft preference labels and improve
+Direct Preference Optimization (DPO) with a weighted geometric average of the
+LLM output likelihood in the loss function. This approach adjusts the scale of
+learning loss based on the soft labels such that the loss would approach zero
+when the responses are closer to equally preferred. This simple modification
+can be easily applied to any DPO-based methods and mitigate over-optimization
+and objective mismatch, which prior works suffer from. Our experiments simulate
+the soft preference labels with AI feedback from LLMs and demonstrate that
+geometric averaging consistently improves performance on standard benchmarks
+for alignment research. In particular, we observe more preferable responses
+than binary labels and significant improvements where modestly-confident labels
+are in the majority.},
+ arxiv_url = {https://arxiv.org/pdf/2409.06691v3.pdf},
+ author = {Hiroki Furuta and Kuang-Huei Lee and Shixiang Shane Gu and Yutaka Matsuo and Aleksandra Faust and Heiga Zen and Izzeddin Gur},
+ title = {Geometric-Averaged Preference Optimization for Soft Preference Labels},
+ year = {2024}
+}
+
+@article{guo-2023-beyond,
+ abstract = {Alignment with human preference is a desired property of large language
+models (LLMs). Currently, the main alignment approach is based on reinforcement
+learning from human feedback (RLHF). Despite the effectiveness of RLHF, it is
+intricate to implement and train, thus recent studies explore how to develop
+alternative alignment approaches based on supervised fine-tuning (SFT). A major
+limitation of SFT is that it essentially does imitation learning, which cannot
+fully understand what are the expected behaviors. To address this issue, we
+propose an improved alignment approach named FIGA. Different from prior
+methods, we incorporate fine-grained (i.e., token or phrase level) quality
+signals that are derived by contrasting good and bad responses. Our approach
+has made two major contributions. Firstly, we curate a refined alignment
+dataset that pairs initial responses and the corresponding revised ones.
+Secondly, we devise a new loss function can leverage fine-grained quality
+signals to instruct the learning of LLMs for alignment. Extensive experiments
+have demonstrated the effectiveness of our approaches by comparing a number of
+competitive baselines.},
+ arxiv_url = {https://arxiv.org/pdf/2311.04072v2.pdf},
+ author = {Geyang Guo and Ranchi Zhao and Tianyi Tang and Wayne Xin Zhao and Ji-Rong Wen},
+ github_url = {https://github.com/RUCAIBox/FIGA},
+ title = {Beyond Imitation: Leveraging Fine-grained Quality Signals for Alignment},
+ year = {2023}
+}
+
+@article{lin-2021-straight,
+ abstract = {Advanced large-scale neural language models have led to significant success
+in many language generation tasks. However, the most commonly used training
+objective, Maximum Likelihood Estimation (MLE), has been shown problematic,
+where the trained model prefers using dull and repetitive phrases. In this
+work, we introduce ScaleGrad, a modification straight to the gradient of the
+loss function, to remedy the degeneration issue of the standard MLE objective.
+By directly maneuvering the gradient information, ScaleGrad makes the model
+learn to use novel tokens. Empirical results show the effectiveness of our
+method not only in open-ended generation, but also in directed generation
+tasks. With the simplicity in architecture, our method can serve as a general
+training objective that is applicable to most of the neural text generation
+tasks.},
+ arxiv_url = {https://arxiv.org/pdf/2106.07207v1.pdf},
+ author = {Xiang Lin and Simeng Han and Shafiq Joty},
+ github_url = {https://github.com/shawnlimn/ScaleGrad},
+ title = {Straight to the Gradient: Learning to Use Novel Tokens for Neural Text Generation},
+ year = {2021}
+}
+
+@article{lin-2024-selecting,
+ abstract = {The ever-growing ecosystem of LLMs has posed a challenge in selecting the
+most appropriate pre-trained model to fine-tune amidst a sea of options. Given
+constrained resources, fine-tuning all models and making selections afterward
+is unrealistic. In this work, we formulate this resource-constrained selection
+task into predicting fine-tuning performance and illustrate its natural
+connection with Scaling Law. Unlike pre-training, we find that the fine-tuning
+scaling curve includes not just the well-known "power phase" but also the
+previously unobserved "pre-power phase". We also explain why existing Scaling
+Law fails to capture this phase transition phenomenon both theoretically and
+empirically. To address this, we introduce the concept of "pre-learned data
+size" into our Rectified Scaling Law, which overcomes theoretical limitations
+and fits experimental results much better. By leveraging our law, we propose a
+novel LLM selection algorithm that selects the near-optimal model with hundreds
+of times less resource consumption, while other methods may provide negatively
+correlated selection. The project page is available at
+rectified-scaling-law.github.io.},
+ arxiv_url = {https://arxiv.org/pdf/2402.02314v3.pdf},
+ author = {Haowei Lin and Baizhou Huang and Haotian Ye and Qinyu Chen and Zihao Wang and Sujian Li and Jianzhu Ma and Xiaojun Wan and James Zou and Yitao Liang},
+ journal = {ICML 2024},
+ title = {Selecting Large Language Model to Fine-tune via Rectified Scaling Law},
+ year = {2024}
+}
+
+@article{lu-2024-discovering,
+ abstract = {Offline preference optimization is a key method for enhancing and controlling
+the quality of Large Language Model (LLM) outputs. Typically, preference
+optimization is approached as an offline supervised learning task using
+manually-crafted convex loss functions. While these methods are based on
+theoretical insights, they are inherently constrained by human creativity, so
+the large search space of possible loss functions remains under explored. We
+address this by performing LLM-driven objective discovery to automatically
+discover new state-of-the-art preference optimization algorithms without
+(expert) human intervention. Specifically, we iteratively prompt an LLM to
+propose and implement new preference optimization loss functions based on
+previously-evaluated performance metrics. This process leads to the discovery
+of previously-unknown and performant preference optimization algorithms. The
+best performing of these we call Discovered Preference Optimization (DiscoPOP),
+a novel algorithm that adaptively blends logistic and exponential losses.
+Experiments demonstrate the state-of-the-art performance of DiscoPOP and its
+successful transfer to held-out tasks.},
+ arxiv_url = {https://arxiv.org/pdf/2406.08414v3.pdf},
+ author = {Chris Lu and Samuel Holt and Claudio Fanconi and Alex J. Chan and Jakob Foerster and Mihaela van der Schaar and Robert Tjarko Lange},
+ github_url = {https://github.com/lm-sys/FastChat},
+ title = {Discovering Preference Optimization Algorithms with and for Large Language Models},
+ year = {2024}
+}
+
+@article{malinovskii-2024-tuning,
+ abstract = {There has been significant interest in "extreme" compression of large
+language models (LLMs), i.e., to 1-2 bits per parameter, which allows such
+models to be executed efficiently on resource-constrained devices. Existing
+work focused on improved one-shot quantization techniques and weight
+representations; yet, purely post-training approaches are reaching diminishing
+returns in terms of the accuracy-vs-bit-width trade-off. State-of-the-art
+quantization methods such as QuIP# and AQLM include fine-tuning (part of) the
+compressed parameters over a limited amount of calibration data; however, such
+fine-tuning techniques over compressed weights often make exclusive use of
+straight-through estimators (STE), whose performance is not well-understood in
+this setting. In this work, we question the use of STE for extreme LLM
+compression, showing that it can be sub-optimal, and perform a systematic study
+of quantization-aware fine-tuning strategies for LLMs. We propose PV-Tuning - a
+representation-agnostic framework that generalizes and improves upon existing
+fine-tuning strategies, and provides convergence guarantees in restricted
+cases. On the practical side, when used for 1-2 bit vector quantization,
+PV-Tuning outperforms prior techniques for highly-performant models such as
+Llama and Mistral. Using PV-Tuning, we achieve the first Pareto-optimal
+quantization for Llama 2 family models at 2 bits per parameter.},
+ arxiv_url = {https://arxiv.org/pdf/2405.14852v2.pdf},
+ author = {Vladimir Malinovskii and Denis Mazur and Ivan Ilin and Denis Kuznedelev and Konstantin Burlachenko and Kai Yi and Dan Alistarh and Peter Richtarik},
+ github_url = {https://github.com/Macaronlin/LLaMA3-Quantization},
+ title = {PV-Tuning: Beyond Straight-Through Estimation for Extreme LLM Compression},
+ year = {2024}
+}
+
+@article{seo-2024-train,
+ abstract = {Previous studies on continual knowledge learning (CKL) in large language
+models (LLMs) have predominantly focused on approaches such as regularization,
+architectural modifications, and rehearsal techniques to mitigate catastrophic
+forgetting. However, these methods naively inherit the inefficiencies of
+standard training procedures, indiscriminately applying uniform weight across
+all tokens, which can lead to unnecessary parameter updates and increased
+forgetting. To address these shortcomings, we propose a novel CKL approach
+termed Train-Attention-Augmented Language Model (TAALM), which enhances
+learning efficiency by dynamically predicting and applying weights to tokens
+based on their usefulness. This method employs a meta-learning framework that
+optimizes token importance predictions, facilitating targeted knowledge updates
+and minimizing forgetting. Also, we observe that existing benchmarks do not
+clearly exhibit the trade-off between learning and retaining, therefore we
+propose a new benchmark, \textsc{LAMA-ckl}, to address this issue. Through
+experiments conducted on both newly introduced and established CKL benchmarks,
+TAALM proves the state-of-the-art performance upon the baselines, and also
+shows synergistic compatibility when integrated with previous CKL approaches.},
+ arxiv_url = {https://arxiv.org/pdf/2407.16920v2.pdf},
+ author = {Yeongbin Seo and Dongha Lee and Jinyoung Yeo},
+ github_url = {https://github.com/ybseo-ac/TAALM},
+ title = {Train-Attention: Meta-Learning Where to Focus in Continual Knowledge Learning},
+ year = {2024}
+}
+
+@article{shao-2023-beyond,
+ abstract = {Maximum likelihood estimation (MLE) is a statistical method used to estimate
+the parameters of a probability distribution that best explain the observed
+data. In the context of text generation, MLE is often used to train generative
+language models, which can then be used to generate new text. However, we argue
+that MLE is not always necessary and optimal, especially for closed-ended text
+generation tasks like machine translation. In these tasks, the goal of model is
+to generate the most appropriate response, which does not necessarily require
+it to estimate the entire data distribution with MLE. To this end, we propose a
+novel class of training objectives based on convex functions, which enables
+text generation models to focus on highly probable outputs without having to
+estimate the entire data distribution. We investigate the theoretical
+properties of the optimal predicted distribution when applying convex functions
+to the loss, demonstrating that convex functions can sharpen the optimal
+distribution, thereby enabling the model to better capture outputs with high
+probabilities. Experiments on various text generation tasks and models show the
+effectiveness of our approach. It enables autoregressive models to bridge the
+gap between greedy and beam search, and facilitates the learning of
+non-autoregressive models with a maximum improvement of 9+ BLEU points.
+Moreover, our approach also exhibits significant impact on large language
+models (LLMs), substantially enhancing their generative capability on various
+tasks. Source code is available at
+\url{https://github.com/ictnlp/Convex-Learning}.},
+ arxiv_url = {https://arxiv.org/pdf/2310.17217v1.pdf},
+ author = {Chenze Shao and Zhengrui Ma and Min Zhang and Yang Feng},
+ github_url = {https://github.com/ictnlp/Convex-Learning},
+ title = {Beyond MLE: Convex Learning for Text Generation},
+ year = {2023}
+}
+
+@article{shao-2024-language,
+ abstract = {Language generation based on maximum likelihood estimation (MLE) has become
+the fundamental approach for text generation. Maximum likelihood estimation is
+typically performed by minimizing the log-likelihood loss, also known as the
+logarithmic score in statistical decision theory. The logarithmic score is
+strictly proper in the sense that it encourages honest forecasts, where the
+expected score is maximized only when the model reports true probabilities.
+Although many strictly proper scoring rules exist, the logarithmic score is the
+only local scoring rule among them that depends exclusively on the probability
+of the observed sample, making it capable of handling the exponentially large
+sample space of natural text. In this work, we propose a straightforward
+strategy for adapting scoring rules to language generation, allowing for
+language modeling with any non-local scoring rules. Leveraging this strategy,
+we train language generation models using two classic strictly proper scoring
+rules, the Brier score and the Spherical score, as alternatives to the
+logarithmic score. Experimental results indicate that simply substituting the
+loss function, without adjusting other hyperparameters, can yield substantial
+improvements in model's generation capabilities. Moreover, these improvements
+can scale up to large language models (LLMs) such as LLaMA-7B and LLaMA-13B.
+Source code: \url{https://github.com/shaochenze/ScoringRulesLM}.},
+ arxiv_url = {https://arxiv.org/pdf/2405.18906v1.pdf},
+ author = {Chenze Shao and Fandong Meng and Yijin Liu and Jie Zhou},
+ title = {Language Generation with Strictly Proper Scoring Rules},
+ year = {2024}
+}
+
+@article{tajwar-2024-preference,
+ abstract = {Learning from preference labels plays a crucial role in fine-tuning large
+language models. There are several distinct approaches for preference
+fine-tuning, including supervised learning, on-policy reinforcement learning
+(RL), and contrastive learning. Different methods come with different
+implementation tradeoffs and performance differences, and existing empirical
+findings present different conclusions, for instance, some results show that
+online RL is quite important to attain good fine-tuning results, while others
+find (offline) contrastive or even purely supervised methods sufficient. This
+raises a natural question: what kind of approaches are important for
+fine-tuning with preference data and why? In this paper, we answer this
+question by performing a rigorous analysis of a number of fine-tuning
+techniques on didactic and full-scale LLM problems. Our main finding is that,
+in general, approaches that use on-policy sampling or attempt to push down the
+likelihood on certain responses (i.e., employ a "negative gradient") outperform
+offline and maximum likelihood objectives. We conceptualize our insights and
+unify methods that use on-policy sampling or negative gradient under a notion
+of mode-seeking objectives for categorical distributions. Mode-seeking
+objectives are able to alter probability mass on specific bins of a categorical
+distribution at a fast rate compared to maximum likelihood, allowing them to
+relocate masses across bins more effectively. Our analysis prescribes
+actionable insights for preference fine-tuning of LLMs and informs how data
+should be collected for maximal improvement.},
+ arxiv_url = {https://arxiv.org/pdf/2404.14367v3.pdf},
+ author = {Fahim Tajwar and Anikait Singh and Archit Sharma and Rafael Rafailov and Jeff Schneider and Tengyang Xie and Stefano Ermon and Chelsea Finn and Aviral Kumar},
+ github_url = {https://github.com/karpathy/minGPT},
+ title = {Preference Fine-Tuning of LLMs Should Leverage Suboptimal, On-Policy Data},
+ year = {2024}
+}
+
+@article{zhang-2023-adaptive,
+ abstract = {Fine-tuning large pre-trained language models on downstream tasks has become
+an important paradigm in NLP. However, common practice fine-tunes all of the
+parameters in a pre-trained model, which becomes prohibitive when a large
+number of downstream tasks are present. Therefore, many fine-tuning methods are
+proposed to learn incremental updates of pre-trained weights in a parameter
+efficient way, e.g., low-rank increments. These methods often evenly distribute
+the budget of incremental updates across all pre-trained weight matrices, and
+overlook the varying importance of different weight parameters. As a
+consequence, the fine-tuning performance is suboptimal. To bridge this gap, we
+propose AdaLoRA, which adaptively allocates the parameter budget among weight
+matrices according to their importance score. In particular, AdaLoRA
+parameterizes the incremental updates in the form of singular value
+decomposition. Such a novel approach allows us to effectively prune the
+singular values of unimportant updates, which is essentially to reduce their
+parameter budget but circumvent intensive exact SVD computations. We conduct
+extensive experiments with several pre-trained models on natural language
+processing, question answering, and natural language generation to validate the
+effectiveness of AdaLoRA. Results demonstrate that AdaLoRA manifests notable
+improvement over baselines, especially in the low budget settings. Our code is
+publicly available at https://github.com/QingruZhang/AdaLoRA .},
+ arxiv_url = {https://arxiv.org/pdf/2303.10512v2.pdf},
+ author = {Qingru Zhang and Minshuo Chen and Alexander Bukharin and Nikos Karampatziakis and Pengcheng He and Yu Cheng and Weizhu Chen and Tuo Zhao},
+ github_url = {https://github.com/microsoft/LoRA},
+ title = {Adaptive Budget Allocation for Parameter-Efficient Fine-Tuning },
+ year = {2023}
+}
+
+@article{zhang-2024-revisiting,
+ abstract = {In the evolving landscape of natural language processing (NLP), fine-tuning
+pre-trained Large Language Models (LLMs) with first-order (FO) optimizers like
+SGD and Adam has become standard. Yet, as LLMs grow {in size}, the substantial
+memory overhead from back-propagation (BP) for FO gradient computation presents
+a significant challenge. Addressing this issue is crucial, especially for
+applications like on-device training where memory efficiency is paramount. This
+paper proposes a shift towards BP-free, zeroth-order (ZO) optimization as a
+solution for reducing memory costs during LLM fine-tuning, building on the
+initial concept introduced by MeZO. Unlike traditional ZO-SGD methods, our work
+expands the exploration to a wider array of ZO optimization techniques, through
+a comprehensive, first-of-its-kind benchmarking study across five LLM families
+(Roberta, OPT, LLaMA, Vicuna, Mistral), three task complexities, and five
+fine-tuning schemes. Our study unveils previously overlooked optimization
+principles, highlighting the importance of task alignment, the role of the
+forward gradient method, and the balance between algorithm complexity and
+fine-tuning performance. We further introduce novel enhancements to ZO
+optimization, including block-wise descent, hybrid training, and gradient
+sparsity. Our study offers a promising direction for achieving further
+memory-efficient LLM fine-tuning. Codes to reproduce all our experiments are at
+https://github.com/ZO-Bench/ZO-LLM .},
+ arxiv_url = {https://arxiv.org/pdf/2402.11592v3.pdf},
+ author = {Yihua Zhang and Pingzhi Li and Junyuan Hong and Jiaxiang Li and Yimeng Zhang and Wenqing Zheng and Pin-Yu Chen and Jason D. Lee and Wotao Yin and Mingyi Hong and Zhangyang Wang and Sijia Liu and Tianlong Chen},
+ title = {Revisiting Zeroth-Order Optimization for Memory-Efficient LLM Fine-Tuning: A Benchmark},
+ year = {2024}
+}
+
+@article{zhao-2023-tuning,
+ abstract = {This paper introduces an efficient strategy to transform Large Language
+Models (LLMs) into Multi-Modal Large Language Models (MLLMs). By
+conceptualizing this transformation as a domain adaptation process, i.e.,
+transitioning from text understanding to embracing multiple modalities, we
+intriguingly note that, within each attention block, tuning LayerNorm suffices
+to yield strong performance. Moreover, when benchmarked against other tuning
+approaches like full parameter finetuning or LoRA, its benefits on efficiency
+are substantial. For example, when compared to LoRA on a 13B model scale,
+performance can be enhanced by an average of over 20% across five multi-modal
+tasks, and meanwhile, results in a significant reduction of trainable
+parameters by 41.9% and a decrease in GPU memory usage by 17.6%. On top of this
+LayerNorm strategy, we showcase that selectively tuning only with
+conversational data can improve efficiency further. Beyond these empirical
+outcomes, we provide a comprehensive analysis to explore the role of LayerNorm
+in adapting LLMs to the multi-modal domain and improving the expressive power
+of the model.},
+ arxiv_url = {https://arxiv.org/pdf/2312.11420v1.pdf},
+ author = {Bingchen Zhao and Haoqin Tu and Chen Wei and Jieru Mei and Cihang Xie},
+ title = {Tuning LayerNorm in Attention: Towards Efficient Multi-Modal LLM Finetuning},
+ year = {2023}
+}
+
+% ===========================================
+% REFERENCE CANDIDATES
+% Additional reference papers for context
+% ===========================================
+
+@article{aghajanyan-2023-scaling,
+ abstract = {Generative language models define distributions over sequences of tokens that
+can represent essentially any combination of data modalities (e.g., any
+permutation of image tokens from VQ-VAEs, speech tokens from HuBERT, BPE tokens
+for language or code, and so on). To better understand the scaling properties
+of such mixed-modal models, we conducted over 250 experiments using seven
+different modalities and model sizes ranging from 8 million to 30 billion,
+trained on 5-100 billion tokens. We report new mixed-modal scaling laws that
+unify the contributions of individual modalities and the interactions between
+them. Specifically, we explicitly model the optimal synergy and competition due
+to data and model size as an additive term to previous uni-modal scaling laws.
+We also find four empirical phenomena observed during the training, such as
+emergent coordinate-ascent style training that naturally alternates between
+modalities, guidelines for selecting critical hyper-parameters, and connections
+between mixed-modal competition and training stability. Finally, we test our
+scaling law by training a 30B speech-text model, which significantly
+outperforms the corresponding unimodal models. Overall, our research provides
+valuable insights into the design and training of mixed-modal generative
+models, an important new class of unified models that have unique
+distributional properties.},
+ arxiv_url = {https://arxiv.org/pdf/2301.03728v1.pdf},
+ author = {Armen Aghajanyan and Lili Yu and Alexis Conneau and Wei-Ning Hsu and Karen Hambardzumyan and Susan Zhang and Stephen Roller and Naman Goyal and Omer Levy and Luke Zettlemoyer},
+ title = {Scaling laws for generative mixed-modal language models},
+ year = {2023}
+}
+
+@article{openai-2023-gpt,
+ abstract = {We report the development of GPT-4, a large-scale, multimodal model which can
+accept image and text inputs and produce text outputs. While less capable than
+humans in many real-world scenarios, GPT-4 exhibits human-level performance on
+various professional and academic benchmarks, including passing a simulated bar
+exam with a score around the top 10% of test takers. GPT-4 is a
+Transformer-based model pre-trained to predict the next token in a document.
+The post-training alignment process results in improved performance on measures
+of factuality and adherence to desired behavior. A core component of this
+project was developing infrastructure and optimization methods that behave
+predictably across a wide range of scales. This allowed us to accurately
+predict some aspects of GPT-4's performance based on models trained with no
+more than 1/1,000th the compute of GPT-4.},
+ arxiv_url = {https://arxiv.org/pdf/2303.08774v6.pdf},
+ author = {OpenAI and Josh Achiam and Steven Adler and Sandhini Agarwal and Lama Ahmad and Ilge Akkaya and Florencia Leoni Aleman and Diogo Almeida and Janko Altenschmidt and Sam Altman and Shyamal Anadkat and Red Avila and Igor Babuschkin and Suchir Balaji and Valerie Balcom and Paul Baltescu and Haiming Bao and Mohammad Bavarian and Jeff Belgum and Irwan Bello and Jake Berdine and Gabriel Bernadett-Shapiro and Christopher Berner and Lenny Bogdonoff and Oleg Boiko and Madelaine Boyd and Anna-Luisa Brakman and Greg Brockman and Tim Brooks and Miles Brundage and Kevin Button and Trevor Cai and Rosie Campbell and Andrew Cann and Brittany Carey and Chelsea Carlson and Rory Carmichael and Brooke Chan and Che Chang and Fotis Chantzis and Derek Chen and Sully Chen and Ruby Chen and Jason Chen and Mark Chen and Ben Chess and Chester Cho and Casey Chu and Hyung Won Chung and Dave Cummings and Jeremiah Currier and Yunxing Dai and Cory Decareaux and Thomas Degry and Noah Deutsch and Damien Deville and Arka Dhar and David Dohan and Steve Dowling and Sheila Dunning and Adrien Ecoffet and Atty Eleti and Tyna Eloundou and David Farhi and Liam Fedus and Niko Felix and Simón Posada Fishman and Juston Forte and Isabella Fulford and Leo Gao and Elie Georges and Christian Gibson and Vik Goel and Tarun Gogineni and Gabriel Goh and Rapha Gontijo-Lopes and Jonathan Gordon and Morgan Grafstein and Scott Gray and Ryan Greene and Joshua Gross and Shixiang Shane Gu and Yufei Guo and Chris Hallacy and Jesse Han and Jeff Harris and Yuchen He and Mike Heaton and Johannes Heidecke and Chris Hesse and Alan Hickey and Wade Hickey and Peter Hoeschele and Brandon Houghton and Kenny Hsu and Shengli Hu and Xin Hu and Joost Huizinga and Shantanu Jain and Shawn Jain and Joanne Jang and Angela Jiang and Roger Jiang and Haozhun Jin and Denny Jin and Shino Jomoto and Billie Jonn and Heewoo Jun and Tomer Kaftan and Łukasz Kaiser and Ali Kamali and Ingmar Kanitscheider and Nitish Shirish Keskar and Tabarak Khan and Logan Kilpatrick and Jong Wook Kim and Christina Kim and Yongjik Kim and Jan Hendrik Kirchner and Jamie Kiros and Matt Knight and Daniel Kokotajlo and Łukasz Kondraciuk and Andrew Kondrich and Aris Konstantinidis and Kyle Kosic and Gretchen Krueger and Vishal Kuo and Michael Lampe and Ikai Lan and Teddy Lee and Jan Leike and Jade Leung and Daniel Levy and Chak Ming Li and Rachel Lim and Molly Lin and Stephanie Lin and Mateusz Litwin and Theresa Lopez and Ryan Lowe and Patricia Lue and Anna Makanju and Kim Malfacini and Sam Manning and Todor Markov and Yaniv Markovski and Bianca Martin and Katie Mayer and Andrew Mayne and Bob McGrew and Scott Mayer McKinney and Christine McLeavey and Paul McMillan and Jake McNeil and David Medina and Aalok Mehta and Jacob Menick and Luke Metz and Andrey Mishchenko and Pamela Mishkin and Vinnie Monaco and Evan Morikawa and Daniel Mossing and Tong Mu and Mira Murati and Oleg Murk and David Mély and Ashvin Nair and Reiichiro Nakano and Rajeev Nayak and Arvind Neelakantan and Richard Ngo and Hyeonwoo Noh and Long Ouyang and Cullen O'Keefe and Jakub Pachocki and Alex Paino and Joe Palermo and Ashley Pantuliano and Giambattista Parascandolo and Joel Parish and Emy Parparita and Alex Passos and Mikhail Pavlov and Andrew Peng and Adam Perelman and Filipe de Avila Belbute Peres and Michael Petrov and Henrique Ponde de Oliveira Pinto and Michael and Pokorny and Michelle Pokrass and Vitchyr H. Pong and Tolly Powell and Alethea Power and Boris Power and Elizabeth Proehl and Raul Puri and Alec Radford and Jack Rae and Aditya Ramesh and Cameron Raymond and Francis Real and Kendra Rimbach and Carl Ross and Bob Rotsted and Henri Roussez and Nick Ryder and Mario Saltarelli and Ted Sanders and Shibani Santurkar and Girish Sastry and Heather Schmidt and David Schnurr and John Schulman and Daniel Selsam and Kyla Sheppard and Toki Sherbakov and Jessica Shieh and Sarah Shoker and Pranav Shyam and Szymon Sidor and Eric Sigler and Maddie Simens and Jordan Sitkin and Katarina Slama and Ian Sohl and Benjamin Sokolowsky and Yang Song and Natalie Staudacher and Felipe Petroski Such and Natalie Summers and Ilya Sutskever and Jie Tang and Nikolas Tezak and Madeleine B. Thompson and Phil Tillet and Amin Tootoonchian and Elizabeth Tseng and Preston Tuggle and Nick Turley and Jerry Tworek and Juan Felipe Cerón Uribe and Andrea Vallone and Arun Vijayvergiya and Chelsea Voss and Carroll Wainwright and Justin Jay Wang and Alvin Wang and Ben Wang and Jonathan Ward and Jason Wei and CJ Weinmann and Akila Welihinda and Peter Welinder and Jiayi Weng and Lilian Weng and Matt Wiethoff and Dave Willner and Clemens Winter and Samuel Wolrich and Hannah Wong and Lauren Workman and Sherwin Wu and Jeff Wu and Michael Wu and Kai Xiao and Tao Xu and Sarah Yoo and Kevin Yu and Qiming Yuan and Wojciech Zaremba and Rowan Zellers and Chong Zhang and Marvin Zhang and Shengjia Zhao and Tianhao Zheng and Juntang Zhuang and William Zhuk and Barret Zoph},
+ title = {Gpt-4 technical report},
+ year = {2023}
+}
